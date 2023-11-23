@@ -153,5 +153,5 @@ cython_debug/
 #.idea/
 
 #Data from Pubstack 
-.csv
+*.csv
 
