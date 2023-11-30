@@ -217,6 +217,7 @@ class DataProcessor:
     def _saving_preprocess(self):
         """Process to create the skeleton of all the data files witch corresponds to weekdays
         """
+        print("Weekday folder création....")
         if(self.base_csv_file == None):
             self._file_selection()
         df = pd.read_csv(self.base_csv_file)
@@ -228,7 +229,6 @@ class DataProcessor:
         if(self.selected_directory == None):
             self._directory_selection()
         if (os.path.exists(f'{self.selected_directory}/weekdays') == False):
-            
             self._saving_preprocess()
         day_directory = f'{self.selected_directory}/weekdays'
          # Select a file within the selected directory
@@ -293,8 +293,10 @@ class DataProcessor:
         return selected_csv
         
     def _mean_weekday(self, csv_file = None): 
+        
         if csv_file == None :
             csv_file = self._day_file_selection()
+        print(csv_file)
         data_means = pd.DataFrame()
         data = pd.read_csv(csv_file)
         data['datetime'] = pd.to_datetime(data['datetime'])
@@ -365,6 +367,8 @@ class DataProcessor:
         if os.path.exists(model_file):
             print('Model already exists')
         else:
+            if os.path.exists(f'{self.selected_directory}/weekdays') == False:
+                self._saving_preprocess()
             day_data = f'{self.selected_directory}/weekdays/data_{str.lower(weekday)}.csv'
             self._mean_weekday(day_data)
             print("Model has been correctly generated")
