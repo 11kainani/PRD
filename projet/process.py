@@ -12,7 +12,7 @@ class DataProcessor:
         """ The currrent directory to be studied -> A directory corresponds to a site 
         """
         self.base_csv_file = None 
-        """The current file to be studied -> This file corresponds to the day of the week we want to study
+        """The current file to be studied -> This file corresponds to the day of the week we want to study.
         """
         self.proccessus()
     
