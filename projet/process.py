@@ -16,7 +16,7 @@ class DataProcessor:
         """
         self.proccessus()
     
-    def _tag_division(self):
+    def tag_division(self):
          
         csv_path = f'{self.data_directory}/data.csv'
         separators = [';', ',']  
@@ -165,11 +165,11 @@ class DataProcessor:
             filtered_data.to_csv(csv_name, index=False)
             
         
-    def _file_selection(self):
+    def file_selection(self):
         """Select the base file to be used to construct the model files
         """
         # Select a directory
-        directories = self._directory_selection()
+        directories = self.directory_selection()
         for (dirpath, dirnames, filenames) in os.walk(self.data_directory):
             directories.extend(dirnames)
             break
@@ -193,7 +193,7 @@ class DataProcessor:
         print(f"Selected File: {self.base_csv_file}")
 
 
-    def _directory_selection(self): 
+    def directory_selection(self): 
         """Select the directory that corresponds to the site that is to be used since each main directroy is seperated by the tagid
         """
          # Select a directory
@@ -214,22 +214,27 @@ class DataProcessor:
         self.selected_directory = os.path.join(self.data_directory, directories[directory_index])
         return directories
     
-    def _saving_preprocess(self):
+    def saving_preprocess(self):
         """Process to create the skeleton of all the data files witch corresponds to weekdays
         """
         print("Weekday folder création....")
         if(self.base_csv_file == None):
-            self._file_selection()
+            self.file_selection()
         df = pd.read_csv(self.base_csv_file)
         date_groups = self._day_regroupement(df)
         self._filter_and_save_data(data=df, date_groups=date_groups)
     
 
-    def _day_model_file_selection(self):
+    def day_modelfile_selection(self):
+        """Select the model file to be used 
+
+        Returns:
+            selected_csv: the name of the file that has bee selected to act has the model file
+        """
         if(self.selected_directory == None):
-            self._directory_selection()
+            self.directory_selection()
         if (os.path.exists(f'{self.selected_directory}/weekdays') == False):
-            self._saving_preprocess()
+            self.saving_preprocess()
         day_directory = f'{self.selected_directory}/weekdays'
          # Select a file within the selected directory
         files = os.listdir(day_directory)
@@ -238,10 +243,8 @@ class DataProcessor:
             filtered_files = [f for f in files if  (os.path.isdir(os.path.join(day_directory, f)) or f.endswith("_model.csv"))]
             if(filtered_files.__len__() == 0 ):
                 print("There is no model file ! \n Create one then select it")
-                self._mean_weekday()
-                       
+                self.mean_weekday()
                 time.sleep(1)  
-
              # Refresh the directory listing
                 files = os.listdir(day_directory)
 
@@ -262,13 +265,17 @@ class DataProcessor:
         print(f"Selected File: {selected_csv}")
         return selected_csv
     
-    def _day_file_selection(self):
+    def dayfile_selection(self):
+        """Selected the data from a specific day of the week [data from monday to sunday]
+
+        Returns:
+            selected_csv: the name of the day of the week file that has bee selected
+        """
         if (os.path.isdir(f'{self.selected_directory}/weekdays') ==False):
-            self._saving_preprocess()
+            self.saving_preprocess()
         if(self.base_csv_file == None):
-            self._directory_selection()
+            self.directory_selection()
         
-            
         day_directory = f'{self.selected_directory}/weekdays'
         
         # Select a file within the selected directory
@@ -292,10 +299,16 @@ class DataProcessor:
         print(f"Selected File: {selected_csv}")
         return selected_csv
         
-    def _mean_weekday(self, csv_file = None): 
+    def mean_weekday(self, csv_file = None): 
+        """Generate the model file for a specific day of the week
+        Args:
+            csv_file (filename, optional): File which contains data from the same day. Defaults to None.
+        Returns:
+            _type_: _description_
+        """
         
         if csv_file == None :
-            csv_file = self._day_file_selection()
+            csv_file = self.dayfile_selection()
         print(csv_file)
         data_means = pd.DataFrame()
         data = pd.read_csv(csv_file)
@@ -318,16 +331,25 @@ class DataProcessor:
         return data_means
           
     def proccessus(self):
-        self._tag_division
+        """Process that seperates the base file from pubstack into the correct format
+        """
+        self.tag_division()
         #self.calculate_weekday_mean()
 
     def calculate_weekday_mean(self):
-        self._file_selection()
-        self._saving_preprocess()
-        self._mean_weekday()      
+        """The process that calculates the model file for a sepecific day of the week
+        """
+        self.file_selection()
+        self.saving_preprocess()
+        self.mean_weekday()      
    
     def statistic_model_data(self):
-        csv_file = self._day_model_file_selection()
+        """Calculate basic scores for each data entry of a model data and update the results with the z score
+
+        Returns:
+            lower_bound: Using the interpercentile range, create a lower boundry that if passed mean that the data is abnormal
+        """
+        csv_file = self.day_modelfile_selection()
         data = pd.read_csv(csv_file)
         columns = ['revenue', 'auctions', 'impressions']
         for column in columns: 
@@ -359,8 +381,13 @@ class DataProcessor:
         return lower_bound
     
     def generate_model_weekday(self, weekday):
+        """Generate the model for a weekday
+
+        Args:
+            weekday (string): the name in english of a day of the week
+        """
         if(self.selected_directory == None):
-            self._directory_selection()
+            self.directory_selection()
         
         model_file = f'{self.selected_directory}/models/model_data_{str.lower(weekday)}.csv'
         
@@ -368,14 +395,22 @@ class DataProcessor:
             print('Model already exists')
         else:
             if os.path.exists(f'{self.selected_directory}/weekdays') == False:
-                self._saving_preprocess()
+                self.saving_preprocess()
             day_data = f'{self.selected_directory}/weekdays/data_{str.lower(weekday)}.csv'
-            self._mean_weekday(day_data)
+            self.mean_weekday(day_data)
             print("Model has been correctly generated")
             
     def data_model_from_file(self, weekday):
+        """read the data of a csv file that corresponds to the model file of the day of the week
+
+        Args:
+            weekday (string): the name in english of a day of the week
+
+        Returns:
+            data: dataframe that corresponds to the model of that data
+        """
         if(self.base_csv_file == None):
-            self._file_selection()
+            self.file_selection()
         
         model_files = []
         
@@ -390,8 +425,14 @@ class DataProcessor:
    
     
     def data_for_day(self):
+        """Read the data of a specific date
+
+        Returns:
+            selected_date : The date selected from the list of available dates
+            data_selected_date: the data for that specific date
+        """
         if(self.base_csv_file == None):
-            self._file_selection()
+            self.file_selection()
         data = pd.read_csv(self.base_csv_file)
         data['datetime'] =  pd.to_datetime(data['datetime'])
         data['date'] = data['datetime'].dt.date
@@ -419,6 +460,15 @@ class DataProcessor:
         return selected_date,data_selected_date
         
     def data_normalization(self, date ,data):
+        """Normalises the data so i can be used to calculate 
+
+        Args:
+            date (string): he date of the data to be used 
+            data (pandas date): The data of a site
+
+        Returns:
+            results: Dataframe of the normalized data
+        """
         
         
         ##Transformation of the date to the name of it in the day of the week
@@ -430,7 +480,8 @@ class DataProcessor:
         data['time'] = data['datetime'].dt.time
         dp.generate_model_weekday(weekday)
         day_data = dp.data_model_from_file(weekday)
-    
+
+       
 
         columns_to_subtract = ['revenue', 'auctions', 'impressions']
         result = day_data[columns_to_subtract].sub(data[columns_to_subtract], fill_value=0)
@@ -441,7 +492,15 @@ class DataProcessor:
         
 
     def simple_verification(self,date,normalized_data):
-        
+        """Using simple statistic indicators, calculates scores for each data entry
+
+        Args:
+            date (panda date): the date of the specific data
+            normalized_data (dataframe): data that has been normalized with data_normalization()
+
+        Returns:
+            _type_: _description_
+        """
         os.makedirs(f'{self.selected_directory}/results',exist_ok=True)
         
         directory_name = os.path.basename(self.selected_directory)
@@ -478,18 +537,18 @@ class DataProcessor:
 dp = DataProcessor()
 
 
-selected_date,df = dp.data_for_day()
+if __name__ == "__main__":
+    selected_date, df = dp.data_for_day()
+    result = dp.data_normalization(selected_date, df)
+    print(result)
+    result.plot(kind='line', marker='o')
 
-result = dp.data_normalization(selected_date,df)
-print (result)
-result.plot(kind='line', marker='o')
+    plt.xlabel('time')
+    plt.ylabel('Difference')
+    plt.title('Subtraction of DataFrames')
 
-plt.xlabel('time')
-plt.ylabel('Difference')
-plt.title('Subtraction of DataFrames')
+    plt.show()
 
-plt.show()
-
-dp.simple_verification(selected_date,result)
+    dp.simple_verification(selected_date, result)
 
 #dp.calculate_distance_from_model()
