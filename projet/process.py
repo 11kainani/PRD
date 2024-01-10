@@ -14,7 +14,7 @@ class DataProcessor:
         self.base_csv_file = None 
         """The current file to be studied -> This file corresponds to the day of the week we want to study.
         """
-        self.proccessus()
+        #self.proccessus()
     
     def tag_division(self):
          
@@ -534,21 +534,12 @@ class DataProcessor:
         return lower_bounds
         
 
-dp = DataProcessor()
 
 
 if __name__ == "__main__":
+    dp = DataProcessor()
     selected_date, df = dp.data_for_day()
     result = dp.data_normalization(selected_date, df)
     print(result)
-    result.plot(kind='line', marker='o')
-
-    plt.xlabel('time')
-    plt.ylabel('Difference')
-    plt.title('Subtraction of DataFrames')
-
-    plt.show()
-
     dp.simple_verification(selected_date, result)
-
-#dp.calculate_distance_from_model()
+    dp.calculate_distance_from_model()
