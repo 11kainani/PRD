@@ -46,6 +46,7 @@ class Loader():
         assert os.path.isfile(selected_file), "The file doesn't exist for that date. Use Model_Generation to compute the file for that date" 
             
         data =  pd.read_csv(selected_file)
+        data.set_index("time", inplace=True)
         return data
     
     def data_for_day_with_selection(self):
@@ -106,17 +107,20 @@ class Loader():
         print("For this file select a date")
         for unique_date, data in group_by_date: 
             unique_dates.append(unique_date)
-            data['datetime'] = pd.to_datetime(data['datetime'])
             data['time'] = data['datetime'].dt.time
-            data.set_index('time',inplace=True)
             data_to_date[unique_date] = data
 
         # Assuming the format is 'YYYY-MM-DD'
         date_in_datetime_format = datetime.strptime(date, '%Y-%m-%d').date()
 
         assert date_in_datetime_format in unique_dates, ("The date that you want doesn't have any data associated.")
-    
-        return data_to_date[date_in_datetime_format]
+
+        selected_data = pd.DataFrame(data_to_date[date_in_datetime_format])
+        print(selected_data)
+        selected_data.set_index("time",inplace=True)
+        
+        
+        return selected_data
 
     def data_for_week():
         ""

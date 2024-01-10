@@ -41,7 +41,8 @@ class Normalise():
         day_data = data_load.data_for_day(date)
 
 
-
+        print(day_data)
+        print(data_model)
         columns_to_subtract = ['revenue', 'auctions', 'impressions']
         result = day_data[columns_to_subtract].sub(data_model[columns_to_subtract], fill_value=0)
        
