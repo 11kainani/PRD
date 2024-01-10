@@ -50,8 +50,5 @@ class Normalise():
 
 if __name__ == "__main__": 
 
-    
-    
-    
     ii = Normalise("0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
     print(ii.data_substration_from_model("2023-10-07"))

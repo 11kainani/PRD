@@ -7,7 +7,7 @@ from normalise import Normalise
 class Calculation():
     def __init__(self, directory):
         self.directory = None 
-        self.result_file = None
+        self.results_directory = None
         self.site_id = None
         assert directory is not None, "Directory is none so we cannot affect the directory to the class"
         directory = directory.strip()
@@ -22,8 +22,8 @@ class Calculation():
         self.site_id = os.path.basename(directory)
         
         "Creation of the results sub directory"
-        self.result_file = f'{self.directory}/results'
-        os.makedirs(self.result_file,exist_ok=True)
+        self.results_directory = f'{self.directory}/results'
+        os.makedirs(self.results_directory,exist_ok=True)
         
 
     def day_simple_verification(self,date):
@@ -38,7 +38,7 @@ class Calculation():
             """
             normalized_data = Normalise(self.directory).data_substration_from_model(date)
             print(normalized_data)
-            results_filename = f'{self.result_file}/r_{date}_{self.site_id}.csv'
+            results_filename = f'{self.results_directory}/r_d_{date}_{self.site_id}.csv'
             columns = ['revenue', 'auctions', 'impressions']
             lower_bounds = pd.DataFrame()
             for column in columns: 
