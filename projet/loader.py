@@ -35,8 +35,12 @@ class Loader():
         for (dirpath, dirnames, filenames) in os.walk(f'{self.directory}/models'):
             model_files.extend(filenames)
             break
-
+        assert len(model_files) > 0, "The model directory hasn't been created yet. Use Model_Generation to generate the model file for this site first"
+        
+        
         selected_model_list =  [f for f in model_files if f.endswith(f"{str.lower(day_of_week)}.csv")]
+        
+            
 
         selected_file = f'{self.directory}/models/{selected_model_list[0]}'
         assert os.path.isfile(selected_file), "The file doesn't exist for that date. Use Model_Generation to compute the file for that date" 
@@ -113,6 +117,9 @@ class Loader():
         assert date_in_datetime_format in unique_dates, ("The date that you want doesn't have any data associated.")
     
         return data_to_date[date_in_datetime_format]
+
+    def data_for_week():
+        ""
 if __name__ == "__main__": 
     obb = Loader("400a2fd4-d9cd-4b18-aa2f-06f245688ebf")
     #print(obb.data_model_from_file("friday"))

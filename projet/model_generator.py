@@ -8,13 +8,15 @@ class Model_generator():
         self.base_file = None
         self.site_id = None
         assert directory is not None, "Directory is none so we cannot affect the directory to the class"
+        directory = directory.strip()
         if os.path.dirname(directory) != "data":
             directory = os.path.join("data", directory)
-            
+
+        
         if os.path.isdir(directory): 
             self.directory = directory
         else:
-            raise ValueError ("The directory entered isn't a directory") 
+            raise ValueError (f"The directory entered ({directory}) isn't a directory") 
         self.site_id = os.path.basename(directory)
         main_file = f'{directory}/{self.site_id}.csv'
         print(main_file)
@@ -47,5 +49,6 @@ class Model_generator():
             data_means.to_csv(f'{self.directory}/models/model_{str.lower(day_of_week)}.csv', index=False)
 
 
-msl = Model_generator("data/400a2fd4-d9cd-4b18-aa2f-06f245688ebf")
+directory = " 0a1b3040-2c06-4cce-8acf-38d6fc99b9f7"
+msl = Model_generator(directory)
 msl.mean_per_day()

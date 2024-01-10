@@ -2,6 +2,8 @@ import os
 import loader
 import pandas as pd
 
+import model_generator
+
 class Normalise():
     def __init__(self, site_directory):
         self.site_id = None
@@ -46,5 +48,9 @@ class Normalise():
         return result   
 
 if __name__ == "__main__": 
-    ii = Normalise("400a2fd4-d9cd-4b18-aa2f-06f245688ebf")
-    print(ii.data_substration_from_model("2023-10-01"))
+
+    
+    
+    
+    ii = Normalise("0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
+    print(ii.data_substration_from_model("2023-10-07"))
