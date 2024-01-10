@@ -59,7 +59,6 @@ class Calculation():
                 normalized_data[f'z_score_{column}'] = [(value - moyenne) / (k * MAD) for value in normalized_data[column]]
                 lower_bounds[column] = lower_bound
             
-            
             normalized_data.to_csv(results_filename)
             
             return lower_bounds    
