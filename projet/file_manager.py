@@ -3,20 +3,23 @@ import os
 
 
 class FileManager(): 
+    """Class to set up the project correctly. With a base csv file, 
+    """
     def __init__(self):
         self.data_directory = "data"
-        self.datafile_location = 'data/data.csv'
+        "The name of the the data file in the project. The main data csv should be placed in a directory named data"
+        self.datafile_location = f'{self.data_directory}/data.csv'
         self.selected_directory = None
         """ The currrent directory to be studied -> A directory corresponds to a site 
         """
         self.base_csv_file = None 
         """The current file to be studied -> This file corresponds to the csv file containing all the information about the specific site"""
-
+        self.tag_division()
+        self.saving_preprocess()
 
     def tag_division(self):
         """Divide the main data file into seperate csv file grouped by thier tagid which is the site identification.
         """
-         
         csv_path = f'{self.data_directory}/data.csv'
         separators = [';', ',']  
         group_field = 'tagid'
@@ -71,7 +74,7 @@ class FileManager():
         Map associating an int to the correct day of the week
 
         Args:
-            week_number (_type_): An integer between [0;6]
+            week_number (int): An integer between [0;6]
 
         Returns:
             string: the name of the day of the week

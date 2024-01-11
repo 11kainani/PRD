@@ -1,5 +1,6 @@
 import os 
 import pandas as pd
+from datetime import datetime, timedelta
 
 
 class Model_generator(): 
@@ -48,7 +49,36 @@ class Model_generator():
             file_base = os.path.splitext(os.path.basename(csv_file))[0]
             data_means.to_csv(f'{self.directory}/models/model_{str.lower(day_of_week)}.csv', index=False)
 
+    def mean_per_weekend(self): 
+        csv_file = self.base_file
+        data = pd.read_csv(csv_file, parse_dates=["datetime"])
+        data["date"] = data["datetime"].dt.date
 
+        pd.to_datetime(data['date'])
+        data.set_index("date", inplace=True)
+
+        weekend_dic = {}
+        for date, value in data.iterrows():
+            date = pd.to_datetime(date)
+            day_name = date.day_name()
+            
+            if day_name == 'Saturday':
+                if date.date() not in weekend_dic:
+                    weekend_dic[date.date()] = []
+                weekend_dic[date.date()].append(value)
+            elif day_name == 'Sunday':
+                start_weekend_date = date - timedelta(days=1)
+                start_weekend_date = start_weekend_date.date()
+                if start_weekend_date not in weekend_dic:
+                    weekend_dic[start_weekend_date] = []
+                weekend_dic[start_weekend_date].append(value)
+                #print(weekend_dic[start_weekend_date.date()])
+                
+        return weekend_dic
+
+        
+
+        
 directory = " 0a1b3040-2c06-4cce-8acf-38d6fc99b9f7"
 msl = Model_generator(directory)
-msl.mean_per_day()
+msl.mean_per_weekend()
