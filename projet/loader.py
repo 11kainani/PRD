@@ -1,6 +1,6 @@
 import os 
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class Loader(): 
     def __init__(self, site_directory):
@@ -122,11 +122,35 @@ class Loader():
         
         return selected_data
 
-    def data_for_week():
-        ""
+    def data_for_week(self, start_date_str):
+        empty_set = []
+        #get the date for the seven next days 
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        end_date = start_date + timedelta(days=7)
+        data_dic = self.generate_date_dict(start_date,end_date)
+        for key, value in data_dic.items(): 
+            if value is None: 
+                empty_set.append(key)
+
+        return data_dic, empty_set    
+
+        #Check if the date has the according data 
+    def generate_date_dict(self, start_date, end_date):
+   
+        date_dict = {}
+        current_date = start_date
+
+        while current_date <= end_date:
+            selected_file_data = pd.read_csv(self.main_data_file, parse_dates=["datetime"])
+            current_date_data = selected_file_data[selected_file_data["datetime"].dt.date == current_date]
+            date_dict[current_date] = current_date_data
+            current_date += timedelta(days=1)
+        return date_dict
+        
 if __name__ == "__main__": 
     obb = Loader("400a2fd4-d9cd-4b18-aa2f-06f245688ebf")
     #print(obb.data_model_from_file("friday"))
     #c,d = obb.data_for_day_with_selection()
     #print(c)
-    print(obb.data_for_day("2023-10-01"))
+    obb.data_for_week("2023-10-01")
+   # print(obb.data_for_day("2023-10-01"))
