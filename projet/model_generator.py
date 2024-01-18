@@ -1,7 +1,7 @@
 import os 
 import pandas as pd
 from datetime import datetime, timedelta
-
+from loader import Loader
 
 class Model_generator(): 
     def __init__(self, directory):
@@ -72,13 +72,56 @@ class Model_generator():
                 if start_weekend_date not in weekend_dic:
                     weekend_dic[start_weekend_date] = []
                 weekend_dic[start_weekend_date].append(value)
-                #print(weekend_dic[start_weekend_date.date()])
                 
         return weekend_dic
+    def mean_week(self):
+        data_means = pd.DataFrame()
+        dataset = Loader(self.directory).main_data()
+        dataset['datetime'] = pd.to_datetime(dataset['datetime'])
+        dataset['dayname'] = dataset['datetime'].dt.day_name()
 
-        
+        # Group by week and day of the week
+        data_weekly = dataset.groupby([pd.Grouper(key='datetime', freq='W')])
 
-        
-directory = " 0a1b3040-2c06-4cce-8acf-38d6fc99b9f7"
-msl = Model_generator(directory)
-msl.mean_per_weekend()
+        for index, week in data_weekly:
+            inter_week_group  = week.groupby(dataset['datetime'].dt.time)
+            print(index,week)
+            for week_index, value in inter_week_group: 
+                #print(week_index, value)
+                ''
+            
+'''
+        for (week, time), group_value in data_weekly:
+            print(week)
+            print(group_value)
+            print()
+            filtered = set(group_value['datetime'].dt.day_name())
+            print(f'unique_dates : {filtered}')
+            mean_values = group_value[['revenue', 'auctions', 'impressions']].mean()
+            
+            # Extract day name from timestamp directly
+            day_name = week.day_name()
+            
+            # Construct DataFrame directly with values
+            if isinstance(mean_values, pd.Series):
+                mean_df = pd.DataFrame([mean_values.values], columns=['revenue', 'auctions', 'impressions'])
+            else:
+                mean_df = pd.DataFrame([mean_values], columns=['revenue', 'auctions', 'impressions'])
+
+            mean_df["dayname"] = day_name
+            mean_df['time'] = time
+
+            data_means = pd.concat([data_means, mean_df], ignore_index=True)
+
+        data_means = data_means[['dayname', 'time', 'revenue', 'auctions', 'impressions']]
+        print(data_means)
+
+        data_means.to_csv("ii.csv")
+    '''               
+
+    
+if __name__ == "__main__":        
+    directory = " f6b6b7f3-abad-46ed-8d39-1d36e6eed9ea"
+    msl = Model_generator(directory)
+    msl.mean_week()
+    

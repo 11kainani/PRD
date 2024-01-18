@@ -7,6 +7,7 @@ class Loader():
         self.site_id = None
         self.directory = None
         self.main_data_file = None
+        self.results_directory = None
 
         if site_directory is None:
              raise ValueError("Site directory cannot be None. Please provide a valid directory.")
@@ -20,7 +21,13 @@ class Loader():
                 self.main_data_file = main
             else: 
                 raise ValueError("The directory doesn't have the main data file(csv)")
+            assert os.path.isdir(f'{self.directory}/results'), "The selected directory doesn't have any results"
+            self.results_directory = f'{self.directory}/results'
 
+    def main_data(self): 
+        data = pd.read_csv(self.main_data_file)
+        return data
+    
     def data_model_from_file(self, day_of_week):
         """read the data of a csv file that corresponds to the model file of the day of the week
 
@@ -116,7 +123,6 @@ class Loader():
         assert date_in_datetime_format in unique_dates, ("The date that you want doesn't have any data associated.")
 
         selected_data = pd.DataFrame(data_to_date[date_in_datetime_format])
-        print(selected_data)
         selected_data.set_index("time",inplace=True)
         
         
@@ -146,11 +152,25 @@ class Loader():
             date_dict[current_date] = current_date_data
             current_date += timedelta(days=1)
         return date_dict
+
+    def day_result(self, date: str):
+        results_list = []
+
+        for (dirpath, dirnames, filenames) in os.walk(self.results_directory):
+            results_list.extend(filenames)
+            break
+        filtered_results = [result for result in results_list if result.startswith(f'r_d_{date}')]
+
+        assert len(filtered_results) != 0, "There is no result file for this specific date"
+
+        results_data = pd.read_csv(f'{self.results_directory}/{filtered_results[0]}', index_col=0)
+
+        return results_data
         
 if __name__ == "__main__": 
-    obb = Loader("400a2fd4-d9cd-4b18-aa2f-06f245688ebf")
+    obb = Loader("data/0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
     #print(obb.data_model_from_file("friday"))
     #c,d = obb.data_for_day_with_selection()
     #print(c)
-    obb.data_for_week("2023-10-01")
-   # print(obb.data_for_day("2023-10-01"))
+    #obb.data_for_week("2023-10-01")
+    print(obb.day_result("2023-10-01"))

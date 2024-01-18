@@ -12,10 +12,10 @@ class Normalise():
 
         if site_directory is None:
              raise ValueError("Site directory cannot be None. Please provide a valid directory.")
-        else:   
+        else:  
             if os.path.dirname(site_directory) != "data":
                 site_directory = os.path.join("data", site_directory)      
-            self.directory = site_directory
+            self.directory = site_directory.strip() 
             self.site_id = os.path.basename(self.directory)
             main = f'{self.directory}/{self.site_id}.csv' 
             if os.path.isfile(main):
@@ -48,7 +48,10 @@ class Normalise():
        
         return result   
 
-if __name__ == "__main__": 
+    def local_outlier_factor_model(self):
+        ""
 
-    ii = Normalise("0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
-    print(ii.data_substration_from_model("2023-10-07"))
+if __name__ == "__main__": 
+    directory = "f6b6b7f3-abad-46ed-8d39-1d36e6eed9ea"
+    ii = Normalise(directory)
+    print(ii.data_substration_from_model("2023-10-05"))

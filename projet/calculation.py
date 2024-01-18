@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 
 from normalise import Normalise
+from loader import Loader
 
 class Calculation():
     def __init__(self, directory):
@@ -64,7 +65,36 @@ class Calculation():
             return lower_bounds    
 
 
+    def rolling_average_calculation(self, date, window_size=4):
+        ma_data = pd.DataFrame()
+        columns = ['revenue', 'auctions', 'impressions']
+        
+        dataset = Loader(directory).data_for_day(date)
+        dataset.set_index("datetime", inplace=True) 
+        
+        for column in columns:
+            ma_data[f'ra_{column}'] = dataset[column].rolling(window=window_size).mean()
+        
+        return ma_data
+    
+    def moving_average_expo_calculation(self, date, smoothing_factor = 0.5 ,window_size=4):
+        ma_data = pd.DataFrame()
+        iterator = 0 
+        columns = ['revenue', 'auctions', 'impressions']
+        
+        dataset = Loader(directory).data_for_day(date)
+        dataset.set_index("datetime", inplace=True) 
+        
+        
+        for column in columns:
+            ma_data[f'expma_{column}'] = round(dataset[column].ewm(alpha=smoothing_factor, adjust=False).mean(), 4)
+        
+        return ma_data
+
+    
 if __name__ == "__main__":
-    directory = " 0a1b3040-2c06-4cce-8acf-38d6fc99b9f7"
+    directory = "f6b6b7f3-abad-46ed-8d39-1d36e6eed9ea"
     cal = Calculation(directory) 
-    cal.day_simple_verification("2023-10-01")
+    #cal.day_simple_verification("2023-10-05")
+    print(cal.moving_average_expo_calculation("2023-10-05"))
+    print(cal.rolling_average_calculation("2023-10-05"))
