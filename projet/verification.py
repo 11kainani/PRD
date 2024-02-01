@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np 
 import os
 from datetime import datetime, timedelta
+from collections import defaultdict
 
 from loader import Loader
 
@@ -48,23 +49,55 @@ class Verification:
             
 
     def day_following_timestamps(self,timestamp_dict: dict):
-        following_times = {}
-
+        all_first_anomalie_dict = {}
         for key, value in timestamp_dict.items():
-            # Convert strings to datetime objects
+            following_times = defaultdict(int)
+            first_anomalie_dict = {}
+            skip_list = set()
+            first_main = []
+
             value = [datetime.strptime(item, '%H:%M:%S') for item in value]
 
             for timestamp in value:
                 delay = 0
-                following_times[timestamp.time()] = 0
                 while (timestamp + timedelta(minutes=delay)) in value:
-                    following_times[timestamp.time()] += 1
+                    if delay != 0:
+                        following_times[timestamp.time()] += 1
                     delay += 1
-        
-        return following_times
 
-    def day_anomalie_slope(self, date, error_level = False):
-        mild, worse = self.day_zscore_verification(date)
+            results_dict = sorted(following_times.items())
+            for index, row in results_dict:
+                if index not in first_main:
+                    index_datetime = datetime.combine(datetime.min, index)
+                    if index_datetime not in skip_list:
+                        first_main.append(index)
+                        first_anomalie_dict[index] = row
+                    skip_list.update(datetime.combine(datetime.min, index) + timedelta(minutes=i) for i in range(1, row + 1))
+
+            all_first_anomalie_dict[key] = first_anomalie_dict
+
+        return all_first_anomalie_dict
+
+    def day_anomalie_slope(self, date, only_critical = False):
+        z_columns_slope = {}
+        results_data = Loader(self.directory).day_result(date)
+        abnormal, worse =ver.day_zscore_verification(date)
+        if only_critical:
+            critical_level = worse
+        else:
+            critical_level = worse
+        anomalies = self.day_following_timestamps(critical_level)
+
+        anomalie_slope = {}
+
+        for key, columns in anomalies:
+            ""
+            
+
+        
+
+        
+            
 
         
 
@@ -73,6 +106,7 @@ class Verification:
 if __name__ == "__main__":
     ver = Verification("0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
     abnormal, worse =ver.day_zscore_verification("2023-10-01")
-    print (ver.day_following_timestamps(worse))
     print(worse)
+    print (ver.day_following_timestamps(worse))
+
         
