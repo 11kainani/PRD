@@ -1,6 +1,10 @@
 import os
 import loader
 import pandas as pd
+from sklearn.neighbors import LocalOutlierFactor
+from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
+
 
 import model_generator
 
@@ -40,18 +44,41 @@ class Normalise():
         data_model = data_load.data_model_from_file(day_of_week)
         day_data = data_load.data_for_day(date)
 
-
-        print(day_data)
-        print(data_model)
         columns_to_subtract = ['revenue', 'auctions', 'impressions']
         result = day_data[columns_to_subtract].sub(data_model[columns_to_subtract], fill_value=0)
        
         return result   
 
-    def local_outlier_factor_model(self):
-        ""
+    def local_outlier_factor_model(self, dataset):
+
+        dataset["time"] = dataset.index
+        #dataset["time_str"] = str(dataset["time"])
+        #dataset["time_minutes"] = pd.to_datetime(dataset["time_str"], format="%H:%M:%S").dt.hour * 60 + pd.to_datetime(dataset["time_str"], format="%H:%M:%S").dt.minute
+
+        dataset["time_str"] = dataset["time"].apply(lambda x: str(x).split()[-1])
+
+        # Now 'time_str' should contain only the time part of the mixed-format strings
+        dataset["time_minutes"] = pd.to_datetime(dataset["time_str"], format="%H:%M:%S", errors='coerce').dt.hour * 60 + pd.to_datetime(dataset["time_str"], format="%H:%M:%S", errors='coerce').dt.minute
+
+        column_params = ["revenue", "auctions", "impressions"]
+
+        data_subset = dataset[column_params]
+
+        lof_model = LocalOutlierFactor(n_neighbors=2000, contamination=0.01)
+        y_pred = lof_model.fit_predict(data_subset)
+
+        
+        # Visualize the results (scatter plot)
+        for column in column_params:
+            plt.scatter(dataset["time_minutes"], dataset[column], c=y_pred, cmap='viridis', label=f"{column} Outliers")
+
+        plt.xlabel('Time (minutes since midnight)')
+        plt.ylabel('Value')
+        plt.legend()
+        plt.show()
 
 if __name__ == "__main__": 
     directory = "f6b6b7f3-abad-46ed-8d39-1d36e6eed9ea"
     ii = Normalise(directory)
-    print(ii.data_substration_from_model("2023-10-05"))
+    res =ii.data_substration_from_model("2023-10-05")
+    #ii.local_outlier_factor_model(res)

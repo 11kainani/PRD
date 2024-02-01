@@ -47,26 +47,32 @@ class Verification:
         return minus2_anomalies,minus3_anomalies
             
 
-def day_following_timestamps(timestamp_dict: dict):
-    following_times = {}
+    def day_following_timestamps(self,timestamp_dict: dict):
+        following_times = {}
 
-    for key, value in timestamp_dict.items():
-        # Convert strings to datetime objects
-        value = [datetime.strptime(item, '%H:%M:%S') for item in value]
+        for key, value in timestamp_dict.items():
+            # Convert strings to datetime objects
+            value = [datetime.strptime(item, '%H:%M:%S') for item in value]
 
-        for timestamp in value:
-            delay = 0
-            following_times[timestamp.time()] = 0
-            while (timestamp + timedelta(minutes=delay)) in value:
-                following_times[timestamp.time()] += 1
-                delay += 1
+            for timestamp in value:
+                delay = 0
+                following_times[timestamp.time()] = 0
+                while (timestamp + timedelta(minutes=delay)) in value:
+                    following_times[timestamp.time()] += 1
+                    delay += 1
+        
+        return following_times
 
-    return following_times
+    def day_anomalie_slope(self, date, error_level = False):
+        mild, worse = self.day_zscore_verification(date)
+
+        
+
                 
                   
 if __name__ == "__main__":
     ver = Verification("0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
     abnormal, worse =ver.day_zscore_verification("2023-10-01")
-    day_following_timestamps(worse)
+    print (ver.day_following_timestamps(worse))
     print(worse)
         

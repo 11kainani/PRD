@@ -116,7 +116,12 @@ class Model_generator():
         data_means = data_means[['dayname', 'time', 'revenue', 'auctions', 'impressions']]
         print(data_means)
 
-        data_means.to_csv("ii.csv")
+        ## Exclude 'datetime' from the mean calculation
+        #mean_values = group_value.loc[:, group_value.columns != 'datetime'].mean()
+
+        # Create a new DataFrame with 'datetime' and mean values
+        #result = pd.DataFrame({'datetime': datetime_column, 'revenue': mean_values['revenue'], 'auctions': mean_values['auctions'], 'impressions': mean_values['impressions']})
+            data_means.to_csv("ii.csv")
     '''               
 
     
