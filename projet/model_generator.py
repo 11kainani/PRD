@@ -79,50 +79,14 @@ class Model_generator():
         dataset = Loader(self.directory).main_data()
         dataset['datetime'] = pd.to_datetime(dataset['datetime'])
         dataset['dayname'] = dataset['datetime'].dt.day_name()
+        dataset['time'] = dataset['datetime'].dt.time
 
         # Group by week and day of the week
-        data_weekly = dataset.groupby([pd.Grouper(key='datetime', freq='W')])
+        #data_weekly = dataset.groupby([pd.Grouper(key='datetime', freq='W')])
 
-        for index, week in data_weekly:
-            inter_week_group  = week.groupby(dataset['datetime'].dt.time)
-            print(index,week)
-            for week_index, value in inter_week_group: 
-                #print(week_index, value)
-                ''
-            
-'''
-        for (week, time), group_value in data_weekly:
-            print(week)
-            print(group_value)
-            print()
-            filtered = set(group_value['datetime'].dt.day_name())
-            print(f'unique_dates : {filtered}')
-            mean_values = group_value[['revenue', 'auctions', 'impressions']].mean()
-            
-            # Extract day name from timestamp directly
-            day_name = week.day_name()
-            
-            # Construct DataFrame directly with values
-            if isinstance(mean_values, pd.Series):
-                mean_df = pd.DataFrame([mean_values.values], columns=['revenue', 'auctions', 'impressions'])
-            else:
-                mean_df = pd.DataFrame([mean_values], columns=['revenue', 'auctions', 'impressions'])
-
-            mean_df["dayname"] = day_name
-            mean_df['time'] = time
-
-            data_means = pd.concat([data_means, mean_df], ignore_index=True)
-
-        data_means = data_means[['dayname', 'time', 'revenue', 'auctions', 'impressions']]
-        print(data_means)
-
-        ## Exclude 'datetime' from the mean calculation
-        #mean_values = group_value.loc[:, group_value.columns != 'datetime'].mean()
-
-        # Create a new DataFrame with 'datetime' and mean values
-        #result = pd.DataFrame({'datetime': datetime_column, 'revenue': mean_values['revenue'], 'auctions': mean_values['auctions'], 'impressions': mean_values['impressions']})
-            data_means.to_csv("ii.csv")
-    '''               
+        mean_weekly = dataset.groupby(['dayname', 'time']).agg({'revenue': 'mean', 'impressions': 'mean', 'auctions' : 'mean'})
+        return mean_weekly
+          
 
     
 if __name__ == "__main__":        

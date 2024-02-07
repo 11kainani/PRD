@@ -27,7 +27,7 @@ class Verification:
         assert os.path.isdir(f'{self.directory}/results'), "The selected directory doesn't have any results"
         self.results_directory = f'{self.directory}/results'
 
-    def day_zscore_verification(self,date):
+    def day_zscore_verification(self,date,seuil = 3):
         """For a selected date, verifies the result file associated and return all the dates with a zscore lesser than -2 and -3 on any of the columns. This method should be used after simple verification  
 
         Args:
@@ -38,18 +38,16 @@ class Verification:
         zscore_columns = ['z_score_revenue',
        'z_score_auctions', 'z_score_impressions']
 
-        minus2_anomalies = {}
-        minus3_anomalies = {}
-
+        anomalies = {}
         
+
         for column in zscore_columns:
-            indices_minus2 = results_data.index[results_data[column] < -2].tolist()
-            minus2_anomalies[column] =  list(set(indices_minus2))
-            indices_minus3 = results_data.index[results_data[column] < -3].tolist()
-            minus3_anomalies[column] = list(set(indices_minus3))
+            indices = results_data.index[results_data[column] < -seuil].tolist()
+            anomalies[column] =  list(set(indices))
+            
 
 
-        return minus2_anomalies,minus3_anomalies
+        return anomalies
             
 
     def day_following_timestamps(self,timestamp_dict: dict):
@@ -84,29 +82,21 @@ class Verification:
 
     
         
-    def day_anomalie_slope(self, date, only_critical = False):
+    def day_anomalie_slope(self, date, seuil):
         z_columns_slopes = {}
         results_data = Loader(self.directory).day_result(date)
         index_list = results_data.index.tolist()
-        abnormal, worse =ver.day_zscore_verification(date)
-        if only_critical:
-            critical_level = worse
-        else:
-            critical_level = abnormal
-        anomalies = self.day_following_timestamps(critical_level)
-
-        print(anomalies)
+        errors =ver.day_zscore_verification(date, seuil)
+        anomalies = self.day_following_timestamps(errors)
         anomalie_slope = {}
 
         for key, data_anomalie in anomalies.items():
-            print(key)
             anomalie_dates = data_anomalie.keys()
             anomalie_dates = [time_index.strftime('%H:%M:%S') for time_index in anomalie_dates]
 
             for anomalie_date in anomalie_dates:
                 
                 error_dict = {}
-                target_value = results_data.loc[anomalie_date]
                 current_index_position = index_list.index(anomalie_date)
 
                 
@@ -148,8 +138,8 @@ class Verification:
                   
 if __name__ == "__main__":
     ver = Verification("data/0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
-    abnormal, worse =ver.day_zscore_verification("2023-10-01")
-    #print(worse)
-    #print (ver.day_following_timestamps(worse))
-    ver.day_anomalie_slope("2023-10-01",True)
+    abnormal =ver.day_zscore_verification("2023-10-01")
+    #print(abnormal)
+    #print (ver.day_following_timestamps(abnormal))
+    print(ver.day_anomalie_slope("2023-10-01",4))
         
