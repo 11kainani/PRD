@@ -6,6 +6,10 @@ from collections import defaultdict
 
 from loader import Loader
 
+def remove_zscore_key_word(item :str):
+            keyword = 'z_score_'
+            return item.replace(keyword,'')
+
 class Verification: 
     def __init__(self, directory) -> None:
         self.directory = None 
@@ -78,20 +82,59 @@ class Verification:
 
         return all_first_anomalie_dict
 
+    
+        
     def day_anomalie_slope(self, date, only_critical = False):
-        z_columns_slope = {}
+        z_columns_slopes = {}
         results_data = Loader(self.directory).day_result(date)
+        index_list = results_data.index.tolist()
         abnormal, worse =ver.day_zscore_verification(date)
         if only_critical:
             critical_level = worse
         else:
-            critical_level = worse
+            critical_level = abnormal
         anomalies = self.day_following_timestamps(critical_level)
 
+        print(anomalies)
         anomalie_slope = {}
 
-        for key, columns in anomalies:
-            ""
+        for key, data_anomalie in anomalies.items():
+            print(key)
+            anomalie_dates = data_anomalie.keys()
+            anomalie_dates = [time_index.strftime('%H:%M:%S') for time_index in anomalie_dates]
+
+            for anomalie_date in anomalie_dates:
+                
+                error_dict = {}
+                target_value = results_data.loc[anomalie_date]
+                current_index_position = index_list.index(anomalie_date)
+
+                
+                down_value = True
+                index_delay = 0
+                while down_value:
+                    
+                    index_delay +=1
+                    previous_index = index_list[current_index_position - index_delay] if current_index_position > 0 else None
+                    if(previous_index == None):
+                        down_value = False
+                        break
+                    else:  
+                        
+                        current_index = index_list[current_index_position - (index_delay-1)]
+                      
+
+                        if results_data.loc[previous_index, key] > results_data.loc[current_index, key]:
+                            error_dict[current_index] = results_data.loc[current_index, remove_zscore_key_word(key)] - results_data.loc[previous_index, remove_zscore_key_word(key)]
+                            
+                        else:
+                            down_value= False
+                            anomalie_slope[index_list[current_index_position]] = error_dict
+                          
+
+            
+        return anomalie_slope
+            
             
 
         
@@ -104,9 +147,9 @@ class Verification:
                 
                   
 if __name__ == "__main__":
-    ver = Verification("0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
+    ver = Verification("data/0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
     abnormal, worse =ver.day_zscore_verification("2023-10-01")
-    print(worse)
-    print (ver.day_following_timestamps(worse))
-
+    #print(worse)
+    #print (ver.day_following_timestamps(worse))
+    ver.day_anomalie_slope("2023-10-01",True)
         

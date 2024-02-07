@@ -40,13 +40,27 @@ class Normalise():
         day_of_week = pd.to_datetime(date).day_name()
         ##Transformation of the date to the name of it in the day of the week
         data_load = loader.Loader(self.directory)
+
         
         data_model = data_load.data_model_from_file(day_of_week)
         day_data = data_load.data_for_day(date)
 
-        columns_to_subtract = ['revenue', 'auctions', 'impressions']
-        result = day_data[columns_to_subtract].sub(data_model[columns_to_subtract], fill_value=0)
-       
+        day_data = day_data[['revenue', 'auctions', 'impressions']]
+
+    
+
+
+        day_data = day_data.sort_index()
+        data_model = data_model.sort_index()
+
+        data_model.index = pd.to_datetime(data_model.index).time
+        print(day_data.index,data_model.index)
+        
+        result = day_data.sub(data_model) 
+
+        
+        print(result)
+        
         return result   
 
     def local_outlier_factor_model(self, dataset):
@@ -78,7 +92,7 @@ class Normalise():
         plt.show()
 
 if __name__ == "__main__": 
-    directory = "f6b6b7f3-abad-46ed-8d39-1d36e6eed9ea"
+    directory = "0a1b3040-2c06-4cce-8acf-38d6fc99b9f7"
     ii = Normalise(directory)
-    res =ii.data_substration_from_model("2023-10-05")
+    res =ii.data_substration_from_model("2023-10-01")
     #ii.local_outlier_factor_model(res)

@@ -53,7 +53,9 @@ class Loader():
         assert os.path.isfile(selected_file), "The file doesn't exist for that date. Use Model_Generation to compute the file for that date" 
             
         data =  pd.read_csv(selected_file)
+
         data.set_index("time", inplace=True)
+        
         return data
     
     def data_for_day_with_selection(self):
@@ -168,7 +170,7 @@ class Loader():
         return results_data
         
 if __name__ == "__main__": 
-    obb = Loader("data/0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
+    obb = Loader("0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
     #print(obb.data_model_from_file("friday"))
     #c,d = obb.data_for_day_with_selection()
     #print(c)

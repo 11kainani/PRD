@@ -93,8 +93,8 @@ class Calculation():
 
     
 if __name__ == "__main__":
-    directory = "f6b6b7f3-abad-46ed-8d39-1d36e6eed9ea"
+    directory = "0a1b3040-2c06-4cce-8acf-38d6fc99b9f7"
     cal = Calculation(directory) 
-    #cal.day_simple_verification("2023-10-05")
-    print(cal.moving_average_expo_calculation("2023-10-05"))
-    print(cal.rolling_average_calculation("2023-10-05"))
+    cal.day_simple_verification("2023-10-01")
+    #print(cal.moving_average_expo_calculation("2023-10-05"))
+    #print(cal.rolling_average_calculation("2023-10-05"))
