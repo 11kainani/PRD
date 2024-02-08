@@ -103,6 +103,8 @@ if __name__ == "__main__":
 
     loader = Loader(directory)
     data = loader.data_for_week("2023-10-01")
-    print(data)
+    normal = Normalise(directory)
+    normal.
+    
     #print(cal.moving_average_expo_calculation("2023-10-05"))
     #print(cal.rolling_average_calculation("2023-10-05"))
