@@ -6,13 +6,15 @@ from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 
 
-import model_generator
+from model_generator import Model_generator
+from loader import Loader
 
 class Normalise():
     def __init__(self, site_directory):
         self.site_id = None
         self.directory = None
         self.main_data_file = None
+        self.laoder = None
 
         if site_directory is None:
              raise ValueError("Site directory cannot be None. Please provide a valid directory.")
@@ -27,6 +29,8 @@ class Normalise():
             else: 
                 raise ValueError("The directory doesn't have the main data file(csv)")
 
+        self.laoder = Loader(site_directory)
+        self.generator = Model_generator(site_directory)
     def data_substration_from_model(self, date):
         """Normalises the data so i can be used to calculate 
 
@@ -39,7 +43,7 @@ class Normalise():
         """
         day_of_week = pd.to_datetime(date).day_name()
         ##Transformation of the date to the name of it in the day of the week
-        data_load = loader.Loader(self.directory)
+        data_load = self.laoder
 
         
         data_model = data_load.data_model_from_file(day_of_week)
@@ -54,14 +58,24 @@ class Normalise():
         data_model = data_model.sort_index()
 
         data_model.index = pd.to_datetime(data_model.index).time
-        print(day_data.index,data_model.index)
+     
         
         result = day_data.sub(data_model) 
-
-        
-        print(result)
         
         return result   
+
+    def data_substraction_from_week_model(self):
+        weekly = self.laoder.data_grouped_by_week()
+        week_model = self.generator.mean_week()
+        normalised_week = {}
+        columns_to_substract = ['revenue', 'auctions', 'impressions']
+        for index, data in weekly:
+            data.set_index(['dayname','time'],  inplace=True)
+            formated_data =  data[columns_to_substract].sub(week_model[columns_to_substract]).dropna()
+            normalised_week[index[0].date()] = formated_data
+
+        return normalised_week
+        
 
     def local_outlier_factor_model(self, dataset):
 
@@ -94,5 +108,7 @@ class Normalise():
 if __name__ == "__main__": 
     directory = "0a1b3040-2c06-4cce-8acf-38d6fc99b9f7"
     ii = Normalise(directory)
-    res =ii.data_substration_from_model("2023-10-01")
+    #res =ii.data_substration_from_model("2023-10-01")
     #ii.local_outlier_factor_model(res)
+
+    ii.data_substraction_from_week_model()

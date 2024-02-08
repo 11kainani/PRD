@@ -34,23 +34,13 @@ class Calculation():
                 date (panda date): the date of the specific data
                 normalized_data (dataframe): data that has been normalized with data_normalization()
 
-            Returns:
-                lower_bound : The most lower bound using the interquartile method 
             """
             normalized_data = Normalise(self.directory).data_substration_from_model(date)
-            print(normalized_data)
             results_filename = f'{self.results_directory}/r_d_{date}_{self.site_id}.csv'
             columns = ['revenue', 'auctions', 'impressions']
-            lower_bounds = pd.DataFrame()
             for column in columns: 
-                    #Quartile 1 (25% of the results)
-                Q1 = np.percentile(normalized_data[column], 25)
-                #Quartile 3 (75% of the results)
-                Q3 = np.percentile(normalized_data[column], 75)
                 #Mediane 
                 mediane = np.percentile(normalized_data[column], 50)
-                IQR = Q3 - Q1
-                lower_bound = Q1 - 1.5 * IQR
                 #Mean of the field
                 moyenne = np.mean(normalized_data[column])
                 #Calculation of the Z_Score_Modified
@@ -58,13 +48,28 @@ class Calculation():
                 distance_ecart_type = [abs(value - mediane) for value in normalized_data[column]]
                 MAD = np.std(distance_ecart_type)
                 normalized_data[f'z_score_{column}'] = [(value - moyenne) / (k * MAD) for value in normalized_data[column]]
-                lower_bounds[column] = lower_bound
             
             normalized_data.to_csv(results_filename)
-            
-            return lower_bounds    
+             
 
+    def simple_verification(self, data: pd.DataFrame):
+        columns = ['revenue', 'auctions', 'impressions']
+        for column in columns: 
+           
+            #Mediane 
+            mediane = np.percentile(data[column], 50)
+            #Mean of the field
+            moyenne = np.mean(data[column])
+            #Calculation of the Z_Score_Modified
+            k = 1.4826
+            distance_ecart_type = [abs(value - mediane) for value in data[column]]
+            MAD = np.std(distance_ecart_type)
+            data[f'z_score_{column}'] = [(value - moyenne) / (k * MAD) for value in data[column]]
+        
+        return data
+        
 
+        
     def rolling_average_calculation(self, date, window_size=4):
         ma_data = pd.DataFrame()
         columns = ['revenue', 'auctions', 'impressions']
@@ -79,7 +84,6 @@ class Calculation():
     
     def moving_average_expo_calculation(self, date, smoothing_factor = 0.5 ,window_size=4):
         ma_data = pd.DataFrame()
-        iterator = 0 
         columns = ['revenue', 'auctions', 'impressions']
         
         dataset = Loader(directory).data_for_day(date)
@@ -96,5 +100,9 @@ if __name__ == "__main__":
     directory = "0a1b3040-2c06-4cce-8acf-38d6fc99b9f7"
     cal = Calculation(directory) 
     cal.day_simple_verification("2023-10-01")
+
+    loader = Loader(directory)
+    data = loader.data_for_week("2023-10-01")
+    print(data)
     #print(cal.moving_average_expo_calculation("2023-10-05"))
     #print(cal.rolling_average_calculation("2023-10-05"))

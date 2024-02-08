@@ -72,6 +72,10 @@ class Model_generator():
                 if start_weekend_date not in weekend_dic:
                     weekend_dic[start_weekend_date] = []
                 weekend_dic[start_weekend_date].append(value)
+
+        os.makedirs(f'{self.directory}/models', exist_ok=True)
+        file_base = os.path.splitext(os.path.basename(csv_file))[0]
+        weekend_dic.to_csv(f'{self.directory}/models/model_weekend.csv', index=False)
                 
         return weekend_dic
     def mean_week(self):
@@ -85,6 +89,9 @@ class Model_generator():
         #data_weekly = dataset.groupby([pd.Grouper(key='datetime', freq='W')])
 
         mean_weekly = dataset.groupby(['dayname', 'time']).agg({'revenue': 'mean', 'impressions': 'mean', 'auctions' : 'mean'})
+
+        os.makedirs(f'{self.directory}/models', exist_ok=True)
+        mean_weekly.to_csv(f'{self.directory}/models/model_week.csv')
         return mean_weekly
           
 

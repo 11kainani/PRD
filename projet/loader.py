@@ -143,6 +143,7 @@ class Loader():
         return data_dic, empty_set    
 
         #Check if the date has the according data 
+
     def generate_date_dict(self, start_date, end_date):
    
         date_dict = {}
@@ -168,11 +169,26 @@ class Loader():
         results_data = pd.read_csv(f'{self.results_directory}/{filtered_results[0]}', index_col=0)
 
         return results_data
+
+    def data_grouped_by_week(self):
+        dataset = self.main_data()
+        dataset['datetime'] = pd.to_datetime(dataset['datetime'])
+        dataset['dayname'] = dataset['datetime'].dt.day_name()
+        dataset['time'] = dataset['datetime'].dt.time
+
+        dataset.set_index('datetime')
+        data_weekly = dataset.groupby([pd.Grouper(key='datetime', freq='W')])
         
+        return data_weekly
+             
 if __name__ == "__main__": 
     obb = Loader("0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
     #print(obb.data_model_from_file("friday"))
     #c,d = obb.data_for_day_with_selection()
     #print(c)
     #obb.data_for_week("2023-10-01")
-    print(obb.day_result("2023-10-01"))
+    #print(obb.day_result("2023-10-01"))
+    week = obb.data_grouped_by_week()
+
+    for index, data in week: 
+        print(data)
