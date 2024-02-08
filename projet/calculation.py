@@ -104,7 +104,12 @@ if __name__ == "__main__":
     loader = Loader(directory)
     data = loader.data_for_week("2023-10-01")
     normal = Normalise(directory)
-    normal.
-    
+    weekly = normal.data_substraction_from_week_model()
+
+    for index, data in weekly.items(): 
+        values = cal.simple_verification(data)
+
+        values.to_csv(f'{index}_res.csv')
+        
     #print(cal.moving_average_expo_calculation("2023-10-05"))
     #print(cal.rolling_average_calculation("2023-10-05"))

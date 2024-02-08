@@ -78,6 +78,7 @@ class Model_generator():
         weekend_dic.to_csv(f'{self.directory}/models/model_weekend.csv', index=False)
                 
         return weekend_dic
+    
     def mean_week(self):
         data_means = pd.DataFrame()
         dataset = Loader(self.directory).main_data()

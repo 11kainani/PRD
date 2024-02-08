@@ -51,8 +51,6 @@ class Normalise():
 
         day_data = day_data[['revenue', 'auctions', 'impressions']]
 
-    
-
 
         day_data = day_data.sort_index()
         data_model = data_model.sort_index()
@@ -68,10 +66,11 @@ class Normalise():
         weekly = self.laoder.data_grouped_by_week()
         week_model = self.generator.mean_week()
         normalised_week = {}
-        columns_to_substract = ['revenue', 'auctions', 'impressions']
+        columns_to_substract = ['revenue', 'auctions', 'impressions',]
         for index, data in weekly:
-            data.set_index(['dayname','time'],  inplace=True)
-            formated_data =  data[columns_to_substract].sub(week_model[columns_to_substract]).dropna()
+            data_copy =data.set_index(['dayname','time'],  inplace=False)
+            formated_data =  data_copy[columns_to_substract].sub(week_model[columns_to_substract]).dropna()
+            formated_data['datetime'] = data_copy['datetime']
             normalised_week[index[0].date()] = formated_data
 
         return normalised_week
