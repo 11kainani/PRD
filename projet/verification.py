@@ -65,11 +65,10 @@ class Verification:
             for timestamp in value:
                 delay = 0
                 while (timestamp + timedelta(minutes=delay)) in value:
-                    
-                    following_times[timestamp.time()] += delay
-                    delay += 1
+                    delay +=  1
+                  
+                following_times[timestamp.time()] = delay-1 #Subtract 1 beacause delay start at 0 so if an anomalie is detected but the the next value isn't an anomalie, delay == 1 but following_times should be 0
             results_dict = sorted(following_times.items())
-            print("results : ", results_dict)
             for index, row in results_dict:
                 if index not in first_main:
                     index_datetime = datetime.combine(datetime.min, index)
@@ -80,7 +79,6 @@ class Verification:
 
             all_first_anomalie_dict[key] = first_anomalie_dict
 
-        print(all_first_anomalie_dict)
         return all_first_anomalie_dict
 
     

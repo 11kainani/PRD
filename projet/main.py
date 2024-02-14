@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     
     seuil = 2
-    time = "2023-10-02"
+    time = "2023-10-01"
 
     cal.day_simple_verification(time)
     
@@ -20,10 +20,9 @@ if __name__ == "__main__":
 
     for itera, data in following.items(): 
         print(itera, data)
-        
-    previous_data = (ver.day_anomalie_slope(time,seuil))
 
-    
-    
+
+    print('-'*10)
+    previous_data = (ver.day_anomalie_slope(time,seuil))
     for index, data in previous_data.items():
         print(index, data)

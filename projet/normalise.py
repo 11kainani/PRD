@@ -55,7 +55,7 @@ class Normalise():
         day_data = day_data.sort_index()
         data_model = data_model.sort_index()
 
-        data_model.index = pd.to_datetime(data_model.index).time
+        data_model.index = pd.to_datetime(data_model.index, format='%H:%M:%S').time
      
         
         result = day_data.sub(data_model) 
