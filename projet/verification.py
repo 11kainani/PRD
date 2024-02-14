@@ -47,7 +47,7 @@ class Verification:
             anomalies[column] =  list(set(indices))
             
 
-
+        
         return anomalies
             
 
@@ -60,15 +60,16 @@ class Verification:
             first_main = []
 
             value = [datetime.strptime(item, '%H:%M:%S') for item in value]
+        
 
             for timestamp in value:
                 delay = 0
                 while (timestamp + timedelta(minutes=delay)) in value:
-                    if delay != 0:
-                        following_times[timestamp.time()] += 1
+                    
+                    following_times[timestamp.time()] += delay
                     delay += 1
-
             results_dict = sorted(following_times.items())
+            print("results : ", results_dict)
             for index, row in results_dict:
                 if index not in first_main:
                     index_datetime = datetime.combine(datetime.min, index)
@@ -79,6 +80,7 @@ class Verification:
 
             all_first_anomalie_dict[key] = first_anomalie_dict
 
+        print(all_first_anomalie_dict)
         return all_first_anomalie_dict
 
     
@@ -87,17 +89,17 @@ class Verification:
         z_columns_slopes = {}
         results_data = Loader(self.directory).day_result(date)
         index_list = results_data.index.tolist()
-        errors =ver.day_zscore_verification(date, seuil)
+        errors =self.day_zscore_verification(date, seuil)
         anomalies = self.day_following_timestamps(errors)
         anomalie_slope = {}
-
+        error_dict = {}
         for key, data_anomalie in anomalies.items():
             anomalie_dates = data_anomalie.keys()
             anomalie_dates = [time_index.strftime('%H:%M:%S') for time_index in anomalie_dates]
-
+            
             for anomalie_date in anomalie_dates:
             
-                error_dict = {}
+                
                 current_index_position = index_list.index(anomalie_date)
                 current_index = index_list[current_index_position]
                 previous_index = index_list[current_index_position - 1] if current_index_position > 0 else None
@@ -129,7 +131,9 @@ class Verification:
                           
 
             '''
-        return anomalie_slope
+            z_columns_slopes[key]= anomalie_slope
+            anomalie_slope= {}
+        return z_columns_slopes
             
             
 
@@ -144,13 +148,15 @@ class Verification:
                   
 if __name__ == "__main__":
     ver = Verification("data/0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
-    seuil = 3
+    seuil = 2
+    time = "2023-10-02"
     abnormal =ver.day_zscore_verification("2023-10-01", seuil)
     
     #print(abnormal)
     print (ver.day_following_timestamps(abnormal))
     previous_data = (ver.day_anomalie_slope("2023-10-01",seuil))
 
+    
     
     for index, data in previous_data.items():
 
