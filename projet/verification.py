@@ -3,6 +3,7 @@ import numpy as np
 import os
 from datetime import datetime, timedelta
 from collections import defaultdict
+from tabulate import tabulate
 
 from loader import Loader
 
@@ -95,12 +96,17 @@ class Verification:
             anomalie_dates = [time_index.strftime('%H:%M:%S') for time_index in anomalie_dates]
 
             for anomalie_date in anomalie_dates:
-                
+            
                 error_dict = {}
                 current_index_position = index_list.index(anomalie_date)
-
-                
+                current_index = index_list[current_index_position]
+                previous_index = index_list[current_index_position - 1] if current_index_position > 0 else None
+                assert previous_index != None, 'There is no previous index for this data'
+                drop = (results_data.loc[previous_index,remove_zscore_key_word(key)] - results_data.loc[current_index,remove_zscore_key_word(key)])  / results_data.loc[current_index,remove_zscore_key_word(key)] * 100
+                anomalie_slope[index_list[current_index_position]] = drop
+                '''
                 down_value = True
+                
                 index_delay = 0
                 while down_value:
                     
@@ -122,7 +128,7 @@ class Verification:
                             anomalie_slope[index_list[current_index_position]] = error_dict
                           
 
-            
+            '''
         return anomalie_slope
             
             
@@ -138,8 +144,15 @@ class Verification:
                   
 if __name__ == "__main__":
     ver = Verification("data/0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
-    abnormal =ver.day_zscore_verification("2023-10-01")
+    seuil = 3
+    abnormal =ver.day_zscore_verification("2023-10-01", seuil)
+    
     #print(abnormal)
-    #print (ver.day_following_timestamps(abnormal))
-    print(ver.day_anomalie_slope("2023-10-01",4))
+    print (ver.day_following_timestamps(abnormal))
+    previous_data = (ver.day_anomalie_slope("2023-10-01",seuil))
+
+    
+    for index, data in previous_data.items():
+
+        print(index, data)
         
