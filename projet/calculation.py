@@ -36,19 +36,22 @@ class Calculation():
 
             """
             normalized_data = Normalise(self.directory).data_substration_from_model(date)
+            
             results_filename = f'{self.results_directory}/r_d_{date}_{self.site_id}.csv'
             columns = ['revenue', 'auctions', 'impressions']
             for column in columns: 
                 #Mediane 
-                mediane = np.percentile(normalized_data[column], 50)
+                mediane = np.nanpercentile(normalized_data[column], 50)
                 #Mean of the field
                 moyenne = np.mean(normalized_data[column])
                 #Calculation of the Z_Score_Modified
                 k = 1.4826
+
+                
                 distance_ecart_type = [abs(value - mediane) for value in normalized_data[column]]
                 MAD = np.std(distance_ecart_type)
                 normalized_data[f'z_score_{column}'] = [(value - moyenne) / (k * MAD) for value in normalized_data[column]]
-            
+
             normalized_data.to_csv(results_filename)
              
 
@@ -99,7 +102,8 @@ class Calculation():
 if __name__ == "__main__":
     directory = "0a1b3040-2c06-4cce-8acf-38d6fc99b9f7"
     cal = Calculation(directory) 
-    cal.day_simple_verification("2023-10-01")
+    cal.day_simple_verification("2023-10-07")
+
 
     loader = Loader(directory)
     data = loader.data_for_week("2023-10-01")

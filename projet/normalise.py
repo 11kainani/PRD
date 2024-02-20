@@ -58,7 +58,8 @@ class Normalise():
         data_model.index = pd.to_datetime(data_model.index, format='%H:%M:%S').time
      
         
-        result = day_data.sub(data_model) 
+        result = day_data.sub(data_model).dropna() 
+
         
         return result   
 

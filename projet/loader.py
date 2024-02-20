@@ -113,7 +113,6 @@ class Loader():
         
         unique_dates = []
         data_to_date = {}
-        print("For this file select a date")
         for unique_date, data in group_by_date: 
             unique_dates.append(unique_date)
             data['time'] = data['datetime'].dt.time

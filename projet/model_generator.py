@@ -20,7 +20,6 @@ class Model_generator():
             raise ValueError (f"The directory entered ({directory}) isn't a directory") 
         self.site_id = os.path.basename(directory)
         main_file = f'{directory}/{self.site_id}.csv'
-        print(main_file)
         if not os.path.isfile(main_file): 
             raise ValueError("The main datafile doesn't exist")
         else:
