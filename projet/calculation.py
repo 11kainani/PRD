@@ -27,7 +27,7 @@ class Calculation():
         os.makedirs(self.results_directory,exist_ok=True)
         
 
-    def day_simple_verification(self,date):
+    def day_mean_simple_verification(self,date):
             """Using simple statistic indicators, calculates scores for each data entry
 
             Args:
@@ -100,20 +100,20 @@ class Calculation():
 
     
 if __name__ == "__main__":
-    directory = "0a1b3040-2c06-4cce-8acf-38d6fc99b9f7"
+    directory = "3ee1bd1f-01d8-4277-929d-53b1cebe457b"
     cal = Calculation(directory) 
-    cal.day_simple_verification("2023-10-07")
+    cal.day_mean_simple_verification("2023-10-10")
 
 
     loader = Loader(directory)
-    data = loader.data_for_week("2023-10-01")
+    data = loader.data_for_week("2023-10-10")
     normal = Normalise(directory)
     weekly = normal.data_substraction_from_week_model()
 
     for index, data in weekly.items(): 
         values = cal.simple_verification(data)
 
-        values.to_csv(f'{index}_res.csv')
+        #values.to_csv(f'{index}_res.csv')
         
     #print(cal.moving_average_expo_calculation("2023-10-05"))
     #print(cal.rolling_average_calculation("2023-10-05"))

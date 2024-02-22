@@ -155,14 +155,14 @@ class Loader():
             current_date += timedelta(days=1)
         return date_dict
 
-    def day_result(self, date: str):
+    def day_mean_result(self, date: str):
         results_list = []
 
         for (dirpath, dirnames, filenames) in os.walk(self.results_directory):
             results_list.extend(filenames)
             break
         filtered_results = [result for result in results_list if result.startswith(f'r_d_{date}')]
-
+        
         assert len(filtered_results) != 0, "There is no result file for this specific date"
 
         results_data = pd.read_csv(f'{self.results_directory}/{filtered_results[0]}', index_col=0)

@@ -20,9 +20,9 @@ if __name__ == "__main__":
         print("Seuil Test : ", seuil)
         time = "2023-10-10"
 
-        cal.day_simple_verification(time)
+        cal.day_mean_simple_verification(time)
         
-        abnormal =ver.day_zscore_verification(time, seuil)
+        abnormal =ver.day_mean_zscore_verification(time, seuil)
         
         #print(abnormal)
         following = ver.day_following_timestamps(abnormal)
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
 
         print('\n','-'*50)
-        previous_data = (ver.day_anomalie_slope(time,seuil))
+        previous_data = (ver.day_mean_anomalie_slope(time,seuil))
         
         for index, data in previous_data.items():
             print("{:<10} {:<10}".format("Time", f'{index}_drop'))
