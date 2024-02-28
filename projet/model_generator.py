@@ -24,6 +24,9 @@ class Model_generator():
             raise ValueError("The main datafile doesn't exist")
         else:
             self.base_file = main_file
+
+        self.mean_per_day()
+        
         
     def mean_per_day(self): 
         """Generate the model file for each day of the week
@@ -97,7 +100,7 @@ class Model_generator():
 
     
 if __name__ == "__main__":        
-    directory = " f6b6b7f3-abad-46ed-8d39-1d36e6eed9ea"
+    directory = "0a1b3040-2c06-4cce-8acf-38d6fc99b9f7"
     msl = Model_generator(directory)
-    msl.mean_week()
+    msl.mean_per_day()
     

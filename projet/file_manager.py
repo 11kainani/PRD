@@ -5,10 +5,13 @@ import os
 class FileManager(): 
     """Class to set up the project correctly. With a base csv file, 
     """
-    def __init__(self):
+    def __init__(self,main_csv_file):
         self.data_directory = "data"
         "The name of the the data file in the project. The main data csv should be placed in a directory named data"
-        self.datafile_location = f'{self.data_directory}/data.csv'
+        if main_csv_file.startswith("data"):
+            self.datafile_location = f'{main_csv_file}'
+        else: 
+            self.datafile_location = f'{self.data_directory}/{main_csv_file}'
         self.selected_directory = None
         """ The currrent directory to be studied -> A directory corresponds to a site 
         """
@@ -20,7 +23,7 @@ class FileManager():
     def tag_division(self):
         """Divide the main data file into seperate csv file grouped by thier tagid which is the site identification.
         """
-        csv_path = f'{self.data_directory}/data.csv'
+        csv_path = self.datafile_location
         separators = [';', ',']  
         group_field = 'tagid'
 
@@ -185,9 +188,17 @@ class FileManager():
         """
         return self.data_directory ,self.base_csv_file
 
+    def concat_files(self, main_file, secondairy_file):
+        main = pd.read_csv(main_file)
+        secondary = pd.read_csv(secondairy_file)
+
+        main.add(secondary)
+        main.to_csv("data/data.csv", index=False) 
+        
+
 
 if __name__ == "__main__": 
-    dp = FileManager()
-    dp.tag_division()
+    dp = FileManager("data/519a0d18-032d-4027-bd7f-21a1c39e8d89.csv")
+    #dp.tag_division()
 
-    dp.saving_preprocess()
+    #dp.saving_preprocess()

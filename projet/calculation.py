@@ -28,7 +28,7 @@ class Calculation():
         
 
     def day_mean_simple_verification(self,date):
-            """Using simple statistic indicators, calculates scores for each data entry
+            """Calculate 
 
             Args:
                 date (panda date): the date of the specific data
@@ -40,14 +40,9 @@ class Calculation():
             results_filename = f'{self.results_directory}/r_d_{date}_{self.site_id}.csv'
             columns = ['revenue', 'auctions', 'impressions']
             for column in columns: 
-                #Mediane 
                 mediane = np.nanpercentile(normalized_data[column], 50)
-                #Mean of the field
                 moyenne = np.mean(normalized_data[column])
-                #Calculation of the Z_Score_Modified
                 k = 1.4826
-
-                
                 distance_ecart_type = [abs(value - mediane) for value in normalized_data[column]]
                 MAD = np.std(distance_ecart_type)
                 normalized_data[f'z_score_{column}'] = [(value - moyenne) / (k * MAD) for value in normalized_data[column]]
@@ -55,15 +50,11 @@ class Calculation():
             normalized_data.to_csv(results_filename)
              
 
-    def simple_verification(self, data: pd.DataFrame):
+    def zscore_verification(self, data: pd.DataFrame):
         columns = ['revenue', 'auctions', 'impressions']
         for column in columns: 
-           
-            #Mediane 
             mediane = np.percentile(data[column], 50)
-            #Mean of the field
             moyenne = np.mean(data[column])
-            #Calculation of the Z_Score_Modified
             k = 1.4826
             distance_ecart_type = [abs(value - mediane) for value in data[column]]
             MAD = np.std(distance_ecart_type)
@@ -100,18 +91,19 @@ class Calculation():
 
     
 if __name__ == "__main__":
-    directory = "3ee1bd1f-01d8-4277-929d-53b1cebe457b"
+    directory = 'data/3ee1bd1f-01d8-4277-929d-53b1cebe457b'
+    time = "2023-09-29"
     cal = Calculation(directory) 
-    cal.day_mean_simple_verification("2023-10-10")
+    cal.day_mean_simple_verification(time)
 
 
     loader = Loader(directory)
-    data = loader.data_for_week("2023-10-10")
+    data = loader.data_for_week(time)
     normal = Normalise(directory)
     weekly = normal.data_substraction_from_week_model()
 
     for index, data in weekly.items(): 
-        values = cal.simple_verification(data)
+        values = cal.zscore_verification(data)
 
         #values.to_csv(f'{index}_res.csv')
         

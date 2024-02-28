@@ -46,7 +46,8 @@ class Loader():
         
         
         selected_model_list =  [f for f in model_files if f.endswith(f"{str.lower(day_of_week)}.csv")]
-        
+
+ 
             
 
         selected_file = f'{self.directory}/models/{selected_model_list[0]}'

@@ -31,6 +31,8 @@ class Normalise():
 
         self.laoder = Loader(site_directory)
         self.generator = Model_generator(site_directory)
+        
+        
     def data_substration_from_model(self, date):
         """Normalises the data so i can be used to calculate 
 

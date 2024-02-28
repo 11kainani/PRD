@@ -103,7 +103,7 @@ class Verification:
     def day_anomalie_slope(self, date, seuil):
         z_columns_slopes = {}
         day_data = Loader(self.directory).data_for_day(date)
-        zscore_calculation_data = Calculation(self.directory).simple_verification(day_data)
+        zscore_calculation_data = Calculation(self.directory).zscore_verification(day_data)
         index_list = zscore_calculation_data.index.tolist()
         index_list.sort()
         errors = self.day_z_score_verification(zscore_calculation_data,seuil)
@@ -146,8 +146,12 @@ class Verification:
                 current_index_position = index_list.index(anomalie_date)
                 current_index = index_list[current_index_position]
                 previous_index = index_list[current_index_position - 1] if current_index_position > 0 else None
-                assert previous_index != None, 'There is no previous index for this data'
-                drop = (-results_data.loc[previous_index,remove_zscore_key_word(key)] + results_data.loc[current_index,remove_zscore_key_word(key)])  / results_data.loc[previous_index,remove_zscore_key_word(key)] * 100
+
+                if current_index_position == 0: 
+                    drop = 0
+                else:
+                #assert previous_index != None, 'There is no previous index for this data'
+                    drop = (-results_data.loc[previous_index,remove_zscore_key_word(key)] + results_data.loc[current_index,remove_zscore_key_word(key)])  / results_data.loc[previous_index,remove_zscore_key_word(key)] * 100
                 anomalie_slope[index_list[current_index_position]] = drop
                 '''
                 down_value = True
@@ -226,7 +230,7 @@ class Verification:
 
     def day_analyze_and_print_results(self, directory, time, seuil):
         day_data = Loader(directory).data_for_day(time)
-        results_data = Calculation(directory).simple_verification(day_data)
+        results_data = Calculation(directory).zscore_verification(day_data)
         
         abnormal = self.day_z_score_verification(results_data, seuil)
         following = self.day_following_timestamps(abnormal)
@@ -256,29 +260,17 @@ class Verification:
 
                
 if __name__ == "__main__":
-    directory = 'data/f6b6b7f3-abad-46ed-8d39-1d36e6eed9ea'
+    directory = 'data/3ee1bd1f-01d8-4277-929d-53b1cebe457b'
+    time = "2023-09-29"
     ver = Verification(directory)
     seuil = 2
-    time = "2023-10-05"
-    mean =True 
+    
+    mean =False 
     if mean: 
         ver.day_mean_analyze_and_print_results(time,seuil)
     else:    
         ver.day_analyze_and_print_results(directory,time,seuil)
     
-   
-
-    
-    
-    #print(abnormal)
-    #  abnormal =ver.day_mean_zscore_verification(time, seuil)
-    #previous_data = (ver.day_mean_anomalie_slope(time,seuil))
-
-   
-    # Concatenate dictionaries with the desired format
-
-
-    # Display the result
    
     
     
