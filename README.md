@@ -6,13 +6,15 @@
 
 ## Features
 
-- Feature 1
-- Feature 2
-- Feature 3
+- Calculate the zscore from a dataset 
+- Generate a model for each day of the week in a dataset and do calculation on the dataset
+- Verify the drop pourcentage and the amout of abnormal values using the z-score 
 
 ## Installation
+### Setting up the data files
+For this projet, all that is need is a folder in the working project directory named "data" that contains the main csv named "data.csv".
 
-Instructions on how to install your project. Include any dependencies or prerequisites.
+### Diagrams
 
 ## Usage
 
