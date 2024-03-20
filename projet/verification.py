@@ -14,6 +14,14 @@ def remove_zscore_key_word(item :str):
 
 class Verification: 
     def __init__(self, directory) -> None:
+        """Initialize the Verification class with the directory containing data files.
+
+        Args:
+            directory (str): The directory path containing the data files.
+
+        Raises:
+            ValueError: If the directory is None or invalid.
+        """
         self.directory = None 
         self.results_directory = None
         self.site_id = None
@@ -30,10 +38,14 @@ class Verification:
         self.results_directory = f'{self.directory}/results'
 
     def day_mean_zscore_verification(self,date,seuil = 3):
-        """For a selected date, verifies the result file associated and return all the dates with a zscore lesser than -2 and -3 on any of the columns. This method should be used after simple verification  
+        """Verify the z-scores for a given date and return anomalies.
 
         Args:
-            date (dataframe.date): return 2 elemets : The first element is the list of all the data that has a zscore lower than 2 which corresponds to a medium level of anoamlie. The second element concerns all the data that has a zscore worst than -3 which corresponds to an anormal  data entry 
+            date (str): The date to be verified.
+            seuil (int, optional): The threshold value for z-score anomalies. Defaults to 3.
+
+        Returns:
+            dict: A dictionary containing anomalies based on z-scores for each column.
         """
         
         results_data = Loader(self.directory).day_mean_result(date)
@@ -52,6 +64,15 @@ class Verification:
         return anomalies
 
     def day_z_score_verification(self, data: pd.DataFrame, seuil):
+        """Verify z-scores for a given DataFrame and return anomalies.
+
+        Args:
+            data (pd.DataFrame): The DataFrame to be verified.
+            seuil (int): The threshold value for z-score anomalies.
+
+        Returns:
+            dict: A dictionary containing anomalies based on z-scores for each column.
+        """
         zscore_columns = ['z_score_revenue',
        'z_score_auctions', 'z_score_impressions']
 
@@ -68,6 +89,14 @@ class Verification:
             
 
     def day_following_timestamps(self,timestamp_dict: dict):
+        """Find the following timestamps for anomalies.
+
+        Args:
+            timestamp_dict (dict): A dictionary containing timestamps of anomalies.
+
+        Returns:
+            dict: A dictionary containing the following timestamps for anomalies.
+        """
 
         all_first_anomalie_dict = {}
         for key, value in timestamp_dict.items():
@@ -101,6 +130,15 @@ class Verification:
 
 
     def day_anomalie_slope(self, date, seuil):
+        """Calculate the slope of anomalies for a given date.
+
+        Args:
+            date (str): The date to be analyzed.
+            seuil (int): The threshold value for z-score anomalies.
+
+        Returns:
+            dict: A dictionary containing the slope of anomalies for each column.
+        """
         z_columns_slopes = {}
         day_data = Loader(self.directory).data_for_day(date)
         zscore_calculation_data = Calculation(self.directory).zscore_verification(day_data)
@@ -130,6 +168,15 @@ class Verification:
 
         
     def day_mean_anomalie_slope(self, date, seuil):
+        """Calculate the mean slope of anomalies for a given date.
+
+        Args:
+            date (str): The date to be analyzed.
+            seuil (int): The threshold value for z-score anomalies.
+
+        Returns:
+            dict: A dictionary containing the mean slope of anomalies for each column.
+        """
         z_columns_slopes = {}
         results_data = Loader(self.directory).day_mean_result(date)
         index_list = results_data.index.tolist()
@@ -184,9 +231,26 @@ class Verification:
         
             
     def convert_time_to_str(self,time_obj):
+        """Convert a datetime object to a string in '%H:%M:%S' format.
+
+        Args:
+            time_obj (datetime): The datetime object to be converted.
+
+        Returns:
+            str: The string representation of the time object.
+        """
         return time_obj.strftime('%H:%M:%S')
 
     def following_error_drop_dict(self,following,previous_data):
+        """Combine following anomalies with their corresponding drop values.
+
+        Args:
+            following (dict): A dictionary containing following anomalies.
+            previous_data (dict): A dictionary containing previous data.
+
+        Returns:
+            dict: A dictionary containing following anomalies with drop values.
+        """
         result_dict = {}
         for key in following.keys():
             result_dict[key] = {}
@@ -204,7 +268,12 @@ class Verification:
         return result_dict
         
     def save_following_drop_csv(result_dict):
-         for key, data in result_dict.items():
+        """Save following anomalies with drop values to a CSV file.
+
+        Args:
+            result_dict (dict): A dictionary containing following anomalies with drop values.
+        """
+        for key, data in result_dict.items():
             csv_filename = f"{key}_data.csv"
             with open(csv_filename, 'w', newline='') as csvfile:
                 fieldnames = ['time', 'previous', 'drop']
@@ -222,6 +291,15 @@ class Verification:
 
        
     def add_minutes_to_time(self,input_time_str, delta_minutes):
+        """Add minutes to a time string.
+
+        Args:
+            input_time_str (str): The input time string in '%H:%M:%S' format.
+            delta_minutes (int): The number of minutes to add.
+
+        Returns:
+            str: The resulting time string after adding minutes.
+        """
         input_time = datetime.strptime(input_time_str, '%H:%M:%S')
         result_time = input_time + timedelta(minutes=delta_minutes)
         result_time_str = result_time.strftime('%H:%M:%S')
@@ -229,6 +307,16 @@ class Verification:
         return result_time_str 
 
     def day_analyze_and_print_results(self, directory, time, seuil):
+        """Analyze anomalies for a given day and print the results.
+
+        Args:
+            directory (str): The directory containing data files.
+            time (str): The date to be analyzed.
+            seuil (int): The threshold value for z-score anomalies.
+
+        Returns:
+            None
+        """
         day_data = Loader(directory).data_for_day(time)
         results_data = Calculation(directory).zscore_verification(day_data)
         
@@ -241,6 +329,15 @@ class Verification:
         self.prettier_following_drop(result_dict)
 
     def day_mean_analyze_and_print_results(self, time, seuil):
+        """Analyze mean anomalies for a given day and print the results.
+
+        Args:
+            time (str): The date to be analyzed.
+            seuil (int): The threshold value for z-score anomalies.
+
+        Returns:
+            None
+        """
         abnormal =self.day_mean_zscore_verification(time, seuil)
         following = self.day_following_timestamps(abnormal)
         previous_data = self.day_mean_anomalie_slope(time,seuil)
@@ -249,6 +346,14 @@ class Verification:
         
         
     def prettier_following_drop(self,result_dict):
+        """Print following anomalies with drop values in a prettier format.
+
+        Args:
+            result_dict (dict): A dictionary containing following anomalies with drop values.
+
+        Returns:
+            None
+        """
         for key, data in result_dict.items():
             print(f"\n{key} data:")
             print("{:<12} {:<10} {:<10} {:<10}".format('Time', 'End_time' ,'Previous', 'Drop'))

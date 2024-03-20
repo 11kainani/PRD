@@ -4,6 +4,14 @@ from datetime import datetime, timedelta
 from loader import Loader
 
 class Model_generator(): 
+    """Initialize the Model_generator class with the directory containing data files.
+
+        Args:
+            directory (str): The directory path containing the data files.
+
+        Raises:
+            ValueError: If the directory is None or invalid.
+        """
     def __init__(self, directory):
         self.directory = None 
         self.base_file = None
