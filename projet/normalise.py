@@ -10,6 +10,14 @@ from model_generator import Model_generator
 from loader import Loader
 
 class Normalise():
+    """Initialize the Normalise class with the site directory.
+
+        Args:
+            site_directory (str): The directory containing the site data.
+
+        Raises:
+            ValueError: If the site directory is None or the main data file is not found.
+        """
     def __init__(self, site_directory):
         self.site_id = None
         self.directory = None
@@ -33,15 +41,14 @@ class Normalise():
         self.generator = Model_generator(site_directory)
         
         
-    def data_substration_from_model(self, date):
-        """Normalises the data so i can be used to calculate 
+    def data_substration_from_model(self, date: str):
+        """Normalize the data for a specific date to prepare for calculation.
 
         Args:
-            date (string): he date of the data to be used 
-            data : The data of a site
+            date (str): The date for which data needs to be normalized.
 
         Returns:
-            results: Dataframe of the normalized data
+            pd.DataFrame: Normalized dataset for the specified date.
         """
         day_of_week = pd.to_datetime(date).day_name()
         ##Transformation of the date to the name of it in the day of the week
@@ -66,10 +73,10 @@ class Normalise():
         return result   
 
     def data_substraction_from_week_model(self):
-        """(Unfinished) Substract a week worth of data from its corresponding model data
+        """Subtract a week's worth of data from its corresponding model data.
 
         Returns:
-            pd.DataFrame: normalised dataset
+            dict: A dictionary containing normalized datasets for each date in the week.
         """
         weekly = self.laoder.data_grouped_by_week()
         week_model = self.generator.mean_week()
@@ -85,6 +92,14 @@ class Normalise():
         
 
     def local_outlier_factor_model(self, dataset):
+        """Detect outliers in the dataset using Local Outlier Factor (LOF) algorithm.
+
+        Args:
+            dataset (pd.DataFrame): The dataset containing the data to be analyzed.
+
+        Returns:
+            None
+        """
 
         dataset["time"] = dataset.index
         #dataset["time_str"] = str(dataset["time"])
