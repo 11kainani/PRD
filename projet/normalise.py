@@ -66,6 +66,11 @@ class Normalise():
         return result   
 
     def data_substraction_from_week_model(self):
+        """(Unfinished) Substract a week worth of data from its corresponding model data
+
+        Returns:
+            pd.DataFrame: normalised dataset
+        """
         weekly = self.laoder.data_grouped_by_week()
         week_model = self.generator.mean_week()
         normalised_week = {}

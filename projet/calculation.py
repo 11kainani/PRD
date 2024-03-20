@@ -7,6 +7,11 @@ from loader import Loader
 
 class Calculation():
     def __init__(self, directory):
+        """Initialize the Calculation object.
+
+    Args:
+        directory (str): The directory path containing the data files.
+    """
         self.directory = None 
         self.results_directory = None
         self.site_id = None
@@ -31,7 +36,7 @@ class Calculation():
             """Calculate 
 
             Args:
-                date (panda date): the date of the specific data
+                date (panda date)[YYYY-MM-DD]: the date of the specific data
                 normalized_data (dataframe): data that has been normalized with data_normalization()
 
             """
@@ -51,6 +56,14 @@ class Calculation():
              
 
     def zscore_verification(self, data: pd.DataFrame):
+        """Calculate the z-score for the given data.
+
+    Args:
+        data (pd.DataFrame): The data for which to calculate the z-score.
+
+    Returns:
+        pd.DataFrame: The input data DataFrame with z-score columns added.
+    """
         columns = ['revenue', 'auctions', 'impressions']
         for column in columns: 
             mediane = np.percentile(data[column], 50)
@@ -64,7 +77,16 @@ class Calculation():
         
 
         
-    def rolling_average_calculation(self, date, window_size=4):
+    def day_rolling_average_calculation(self, date, window_size=4):
+        """Calculate the rolling average for the given date.
+
+    Args:
+        date (str)['YYYY-MM-DD']: The dataset for which to calculate the rolling average.
+        window_size (int, optional): The size of the rolling window. Defaults to 4.
+
+    Returns:
+        pd.DataFrame: The dataset with rolling average columns added.
+    """
         ma_data = pd.DataFrame()
         columns = ['revenue', 'auctions', 'impressions']
         
@@ -75,19 +97,72 @@ class Calculation():
             ma_data[f'ra_{column}'] = dataset[column].rolling(window=window_size).mean()
         
         return ma_data
+
+    def rolling_average_calculation(self, dataset : pd.DataFrame, window_size=4):
+        """Calculate the rolling average for the given dataset.
+
+    Args:
+        dataset (pd.DataFrame): The dataset for which to calculate the rolling average.
+        window_size (int, optional): The size of the rolling window. Defaults to 4.
+
+    Returns:
+        pd.DataFrame: The dataset with rolling average columns added.
+    """
+        ma_data = pd.DataFrame()
+        columns = ['revenue', 'auctions', 'impressions']
+        dataset.set_index("datetime", inplace=True) 
+        
+        for column in columns:
+            ma_data[f'ra_{column}'] = dataset[column].rolling(window=window_size).mean()
+        
+        return ma_data
     
-    def moving_average_expo_calculation(self, date, smoothing_factor = 0.5 ,window_size=4):
+    def day_moving_average_expo_calculation(self, date, smoothing_factor = 0.5 ,window_size=4):
+        """Calculate the exponential moving average for a given date.
+
+        Args:
+            dataset (pd.DataFrame): The dataset for which to calculate the exponential moving average
+            smoothing_factor (float, optional): The smoothing factor Defaults to 0.5.
+            window_size (int, optional): The size of the window. Defaults to 4.
+
+        Returns:
+             pd.DataFrame: The dataset with exponential moving average columns added.
+        """
         ma_data = pd.DataFrame()
         columns = ['revenue', 'auctions', 'impressions']
         
         dataset = Loader(directory).data_for_day(date)
+        #assert dataset
         dataset.set_index("datetime", inplace=True) 
         
         
         for column in columns:
-            ma_data[f'expma_{column}'] = round(dataset[column].ewm(alpha=smoothing_factor, adjust=False).mean(), 4)
+            ma_data[f'expma_{column}'] = round(dataset[column].ewm(alpha=smoothing_factor, adjust=False).mean(), window_size)
         
         return ma_data
+
+    def moving_average_expo_calculation(self, dataset : pd.DataFrame, smoothing_factor = 0.5 ,window_size=4):
+        """Calculate the exponential moving average for the given dataset.
+
+        Args:
+            dataset (pd.DataFrame): The dataset for which to calculate the exponential moving average
+            smoothing_factor (float, optional): The smoothing factor Defaults to 0.5.
+            window_size (int, optional): The size of the window. Defaults to 4.
+
+        Returns:
+             pd.DataFrame: The dataset with exponential moving average columns added.
+        """
+
+        ma_data = pd.DataFrame()
+        columns = ['revenue', 'auctions', 'impressions']
+        
+        dataset.set_index("datetime", inplace=True) 
+        
+        
+        for column in columns:
+            ma_data[f'expma_{column}'] = round(dataset[column].ewm(alpha=smoothing_factor, adjust=False).mean(), window_size)
+        
+        return ma_data 
 
     
 if __name__ == "__main__":
