@@ -91,6 +91,7 @@ class Calculation():
         columns = ['revenue', 'auctions', 'impressions']
         
         dataset = Loader(directory).data_for_day(date)
+        assert dataset is not None, "The data for the selected day, make sure that the date contains data or change the date"
         dataset.set_index("datetime", inplace=True) 
         
         for column in columns:
@@ -132,7 +133,7 @@ class Calculation():
         columns = ['revenue', 'auctions', 'impressions']
         
         dataset = Loader(directory).data_for_day(date)
-        #assert dataset
+        assert dataset.size > window_size , "There isn't enough data in your set"
         dataset.set_index("datetime", inplace=True) 
         
         
@@ -152,6 +153,8 @@ class Calculation():
         Returns:
              pd.DataFrame: The dataset with exponential moving average columns added.
         """
+
+        assert dataset.size > window_size , "The dataset doesn't have enough values"
 
         ma_data = pd.DataFrame()
         columns = ['revenue', 'auctions', 'impressions']
