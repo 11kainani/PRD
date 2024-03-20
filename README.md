@@ -20,6 +20,20 @@ The project aims to develop a comprehensive tool for analyzing website traffi da
  
 ## Installation
 
+1. Clone the repository
+2. Navigate to the project directory
+3. Download the necessary dependencies necessary for the project
+```
+pip install -r requirements.txt
+```
+4. Initialize FileManager
+```
+FileManager = FileManager("[location_of_the_main_file].csv")
+```
+The function initializes the project 
+
+4. Now that the project has been initialized, 
+
 ### Setting up the data files
 
 For this projet, all that is need is a folder in the working project directory named "data" that contains the main csv named "data.csv".
