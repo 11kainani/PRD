@@ -2,19 +2,31 @@
 
 ## Description
 
- L’objectif de ce projet est de concevoir un outil capable de détecter une anomalie dans une série temporelle et le notifier. Ces séries temporelles sont de formes variées et multiples mais ce que nous souhaitons est de pouvoir les analyser afin de détecter une baisse dans les courbes de trafic, ce qui correspond à une baisse dans la performance d’un emplacement publicitaire.
+The project aims to develop a comprehensive tool for analyzing website traffi data and detecting anomalies. By using statistical analysis, the tool aims to identify unusual patterns or deviations from expected behavior in various metrics.
 
 ## Features
 
-- Calculate the zscore from a dataset 
-- Generate a model for each day of the week in a dataset and do calculation on the dataset
-- Verify the drop pourcentage and the amout of abnormal values using the z-score 
-
+* Data Loading and Preprocessing:
+  * Load the main data file containing website traffic metrics.
+  * Preprocess the data to handle missing values, format conversion, and indexing by date and time.
+* Model Generation
+  * Generate models based on historical data (per day of the week, weekly, week-end  
+* Anomaly Detection
+  * Calculate z-scores to quantify the deviation of data points from the expected distribution.
+  * Identify anomalies by comparing z-scores against predefined thresholds.
+* Data Verification and Validation
+  * Verify the integrity of data and results through consistency checks and cross-validation.
+  * Validate anomaly detection results.  
+ 
 ## Installation
+
 ### Setting up the data files
+
 For this projet, all that is need is a folder in the working project directory named "data" that contains the main csv named "data.csv".
 
-### Diagrams
+### Documentations 
+
+The python documentation are all in the html/project directory in html format. You can visualize them directly using your favourite browser. 
 
 ## Usage
 
