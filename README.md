@@ -1,4 +1,4 @@
-# Pubstack : Détection d'anomalies sur les courbes de trafic
+# Pubstack : Anomaly Detection on Trafic Curves
 
 ## Description
 
