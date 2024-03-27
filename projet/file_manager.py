@@ -18,7 +18,7 @@ class FileManager():
         self.base_csv_file = None 
         """The current file to be studied -> This file corresponds to the csv file containing all the information about the specific site"""
         self.tag_division()
-        self.saving_preprocess()
+        #self.saving_preprocess()
 
     def tag_division(self):
         """Divide the main data file into seperate csv file grouped by thier tagid which is the site identification.
@@ -93,7 +93,7 @@ class FileManager():
         }
         return week_index[week_number]
 
-    def filter_and_save_data(self,data, date_groups):
+    def filter_and_save_data(self,data : pd.DataFrame, date_groups):
         """
         Filters the data of a site accordining to the unique dates in date_groups and creates seperate files that containes the informations for all the data in that specific day
         Creates weekdays directory

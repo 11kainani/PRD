@@ -21,8 +21,11 @@ class Loader():
                 self.main_data_file = main
             else: 
                 raise ValueError("The directory doesn't have the main data file(csv)")
-            assert os.path.isdir(f'{self.directory}/results'), "The selected directory doesn't have any results"
-            self.results_directory = f'{self.directory}/results'
+            
+            results_path = f'{self.directory}/results'
+            if not os.path.isdir(results_path):
+                os.makedirs(results_path)
+            self.results_directory = results_path
 
     def main_data(self): 
         data = pd.read_csv(self.main_data_file)
@@ -94,11 +97,11 @@ class Loader():
     
         return selected_date,data_to_date[selected_date]
     
-    def data_for_day(self, date):
+    def data_for_day(self, date:str):
         """_summary_
 
         Args:
-            date (pandas.Dataframe.date): The date for the data selected. The format for the date is YYYY-MM-DD
+            date (str): The date for the data selected. The format for the date is YYYY-MM-DD
 
         Returns:
             _type_: _description_
@@ -130,7 +133,16 @@ class Loader():
         
         return selected_data
 
-    def data_for_week(self, start_date_str):
+    def data_for_week(self, start_date_str: str):
+        """
+        Generates a dictionary of data for the next seven days starting from the given start date.
+        
+        Args:
+            start_date_str (str): The start date in the format 'YYYY-MM-DD'.
+            
+        Returns:
+            tuple: A tuple containing a dictionary of data for the next seven days and a list of dates with missing data.
+        """
         empty_set = []
         #get the date for the seven next days 
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
@@ -144,7 +156,17 @@ class Loader():
 
         #Check if the date has the according data 
 
-    def generate_date_dict(self, start_date, end_date):
+    def generate_date_dict(self, start_date:str, end_date:str):
+        """
+        Generates a dictionary with data for each date within the specified range.
+        
+        Args:
+            start_date (str): The start date in the format 'YYYY-MM-DD'.
+            end_date (str): The end date in the format 'YYYY-MM-DD'.
+            
+        Returns:
+            dict: A dictionary with data for each date within the specified range.
+        """
    
         date_dict = {}
         current_date = start_date
@@ -157,6 +179,16 @@ class Loader():
         return date_dict
 
     def day_mean_result(self, date: str):
+        """ Retrieves the mean results for a specific date.
+
+        Args:
+            date (str): The date for which the mean results are required in the format 'YYYY-MM-DD'.
+
+        DataFrame: A DataFrame containing the mean results for the specified date.
+        
+        Raises:
+            AssertionError: If there is no result file for the specified date.
+        """
         results_list = []
 
         for (dirpath, dirnames, filenames) in os.walk(self.results_directory):
@@ -171,6 +203,12 @@ class Loader():
         return results_data
 
     def data_grouped_by_week(self):
+        """
+        Groups the main data by week.
+        
+        Returns:
+            DataFrameGroupBy: A DataFrameGroupBy object containing the main data grouped by week.
+        """
         dataset = self.main_data()
         dataset['datetime'] = pd.to_datetime(dataset['datetime'])
         dataset['dayname'] = dataset['datetime'].dt.day_name()
@@ -180,15 +218,43 @@ class Loader():
         data_weekly = dataset.groupby([pd.Grouper(key='datetime', freq='W')])
         
         return data_weekly
+
+    def get_available_dates(self):
+        """
+        Retrieves available dates from the main data.
+        
+        Returns:
+            list: A list of available dates.
+        """
+        dates = list()
+        for unique_date, data in self.main_data().iterrows(): 
+            dates.append(data["datetime"])
+        return dates
+
+    def  get_available_dates_dataframe(self, data: pd.DataFrame):
+        """
+        Retrieves available dates from the provided DataFrame.
+        
+        Args:
+            data (pd.DataFrame): The DataFrame containing the data.
+            
+        Returns:
+            list: A list of available dates.
+        """
+        dates = list()
+        for unique_date, data in data.iterrows(): 
+            dates.append(data["datetime"])
+        return dates
              
 if __name__ == "__main__": 
-    obb = Loader("0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
+    obb = Loader("data/0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
+    print(obb.get_available_dates_dataframe(obb.data_for_day("2023-10-10")))
     #print(obb.data_model_from_file("friday"))
     #c,d = obb.data_for_day_with_selection()
     #print(c)
     #obb.data_for_week("2023-10-01")
     #print(obb.day_result("2023-10-01"))
     week = obb.data_grouped_by_week()
+    
 
-    for index, data in week: 
-        print(data)
+ 

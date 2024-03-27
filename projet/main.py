@@ -1,5 +1,4 @@
-
-from tabulate import tabulate
+from file_manager import FileManager
 from calculation import Calculation
 from model_generator import Model_generator
 from verification import Verification
@@ -7,24 +6,23 @@ from verification import Verification
 
 if __name__ == "__main__":
     directory = "3ee1bd1f-01d8-4277-929d-53b1cebe457b"
+    FileManager("data/519a0d18-032d-4027-bd7f-21a1c39e8d89.csv")
     cal = Calculation(directory)
     ver = Verification(directory)
     model = Model_generator(directory)
-
-    model.mean_per_day()
     
 
     
     for seuil in range(2,6):
         print('*'*50)
         print("Seuil Test : ", seuil)
-        time = "2023-10-10"
+        time = "2024-10-10"
+        ver.day_mean_analyze_and_print_results(time,seuil)
 
+        '''
         cal.day_mean_simple_verification(time)
         
         abnormal =ver.day_mean_zscore_verification(time, seuil)
-        
-        #print(abnormal)
         following = ver.day_following_timestamps(abnormal)
 
         headers = ['z_score_revenue','z_score_revenue','z_score_impressions']
@@ -48,6 +46,8 @@ if __name__ == "__main__":
             print("-" * 25)
             for time_index, z_score in data.items():
                 print("{:<10} {:<10}".format(time_index, z_score))
+        
+        '''
            
 
     

@@ -24,7 +24,7 @@ class Calculation():
         if os.path.isdir(directory): 
             self.directory = directory
         else:
-            raise ValueError (f"The directory entered ({directory}) isn't a directory") 
+            raise ValueError (f"The directory entered ({directory}) isn't a directory \n Use FileManager to create the directory seperation then select a correct directory by coping the relative path in the data directory. Beware to replace the \ by /") 
         self.site_id = os.path.basename(directory)
         
         "Creation of the results sub directory"
@@ -32,11 +32,11 @@ class Calculation():
         os.makedirs(self.results_directory,exist_ok=True)
         
 
-    def day_mean_simple_verification(self,date):
+    def day_mean_simple_verification(self,date:str):
             """Calculate 
 
             Args:
-                date (panda date)[YYYY-MM-DD]: the date of the specific data
+                date (str)[YYYY-MM-DD]: the date of the specific data
                 normalized_data (dataframe): data that has been normalized with data_normalization()
 
             """
@@ -77,7 +77,7 @@ class Calculation():
         
 
         
-    def day_rolling_average_calculation(self, date, window_size=4):
+    def day_rolling_average_calculation(self, date:str, window_size=4):
         """Calculate the rolling average for the given date.
 
     Args:
@@ -118,7 +118,7 @@ class Calculation():
         
         return ma_data
     
-    def day_moving_average_expo_calculation(self, date, smoothing_factor = 0.5 ,window_size=4):
+    def day_moving_average_expo_calculation(self, date:str, smoothing_factor = 0.5 ,window_size=4):
         """Calculate the exponential moving average for a given date.
 
         Args:

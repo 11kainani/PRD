@@ -91,7 +91,7 @@ class Normalise():
         return normalised_week
         
 
-    def local_outlier_factor_model(self, dataset):
+    def day_local_outlier_factor_model(self, dataset: pd.DataFrame):
         """Detect outliers in the dataset using Local Outlier Factor (LOF) algorithm.
 
         Args:
@@ -114,7 +114,7 @@ class Normalise():
 
         data_subset = dataset[column_params]
 
-        lof_model = LocalOutlierFactor(n_neighbors=2000, contamination=0.01)
+        lof_model = LocalOutlierFactor(n_neighbors=20, contamination=0.1)
         y_pred = lof_model.fit_predict(data_subset)
 
         
@@ -130,7 +130,8 @@ class Normalise():
 if __name__ == "__main__": 
     directory = "0a1b3040-2c06-4cce-8acf-38d6fc99b9f7"
     ii = Normalise(directory)
-    #res =ii.data_substration_from_model("2023-10-01")
-    #ii.local_outlier_factor_model(res)
+    res =ii.data_substration_from_model("2023-10-01")
+    res = Loader(directory).data_for_day("2023-10-01")
+    ii.day_local_outlier_factor_model(res)
 
-    ii.data_substraction_from_week_model()
+    #ii.data_substraction_from_week_model()

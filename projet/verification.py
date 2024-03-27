@@ -63,7 +63,7 @@ class Verification:
         
         return anomalies
 
-    def day_z_score_verification(self, data: pd.DataFrame, seuil):
+    def day_z_score_verification(self, data: pd.DataFrame, seuil : float):
         """Verify z-scores for a given DataFrame and return anomalies.
 
         Args:
@@ -129,7 +129,7 @@ class Verification:
         return all_first_anomalie_dict 
 
 
-    def day_anomalie_slope(self, date, seuil):
+    def day_anomalie_slope(self, date : str, seuil : float):
         """Calculate the slope of anomalies for a given date.
 
         Args:
@@ -167,7 +167,7 @@ class Verification:
         
 
         
-    def day_mean_anomalie_slope(self, date, seuil):
+    def day_mean_anomalie_slope(self, date : str, seuil : float):
         """Calculate the mean slope of anomalies for a given date.
 
         Args:
@@ -200,37 +200,13 @@ class Verification:
                 #assert previous_index != None, 'There is no previous index for this data'
                     drop = (-results_data.loc[previous_index,remove_zscore_key_word(key)] + results_data.loc[current_index,remove_zscore_key_word(key)])  / results_data.loc[previous_index,remove_zscore_key_word(key)] * 100
                 anomalie_slope[index_list[current_index_position]] = drop
-                '''
-                down_value = True
-                
-                index_delay = 0
-                while down_value:
-                    
-                    index_delay +=1
-                    previous_index = index_list[current_index_position - index_delay] if current_index_position > 0 else None
-                    if(previous_index == None):
-                        down_value = False
-                        break
-                    else:  
-                        
-                        current_index = index_list[current_index_position - (index_delay-1)]
-                      
-
-                        if results_data.loc[previous_index, key] > results_data.loc[current_index, key]:
-                            error_dict[current_index] = results_data.loc[current_index, remove_zscore_key_word(key)] - results_data.loc[previous_index, remove_zscore_key_word(key)]
-                            
-                        else:
-                            down_value= False
-                            anomalie_slope[index_list[current_index_position]] = error_dict
-                          
-
-            '''
+           
             z_columns_slopes[key]= anomalie_slope
             anomalie_slope= {}
         return z_columns_slopes
         
             
-    def convert_time_to_str(self,time_obj):
+    def convert_time_to_str(self,time_obj : datetime.time):
         """Convert a datetime object to a string in '%H:%M:%S' format.
 
         Args:
@@ -241,7 +217,7 @@ class Verification:
         """
         return time_obj.strftime('%H:%M:%S')
 
-    def following_error_drop_dict(self,following,previous_data):
+    def following_error_drop_dict(self,following : dict,previous_data: dict):
         """Combine following anomalies with their corresponding drop values.
 
         Args:
@@ -267,7 +243,7 @@ class Verification:
                 result_dict[key][str_time_key]['drop'] = value
         return result_dict
         
-    def save_following_drop_csv(result_dict):
+    def save_following_drop_csv(result_dict: dict):
         """Save following anomalies with drop values to a CSV file.
 
         Args:
@@ -290,7 +266,7 @@ class Verification:
             print(f"CSV file '{csv_filename}' created successfully.")
 
        
-    def add_minutes_to_time(self,input_time_str, delta_minutes):
+    def add_minutes_to_time(self,input_time_str:str, delta_minutes : int):
         """Add minutes to a time string.
 
         Args:
@@ -306,7 +282,7 @@ class Verification:
 
         return result_time_str 
 
-    def day_analyze_and_print_results(self, directory, time, seuil):
+    def day_analyze_and_print_results(self, directory:str, time:str, seuil:float):
         """Analyze anomalies for a given day and print the results.
 
         Args:
@@ -328,7 +304,7 @@ class Verification:
         result_dict = self.following_error_drop_dict(following, previous_data)
         self.prettier_following_drop(result_dict)
 
-    def day_mean_analyze_and_print_results(self, time, seuil):
+    def day_mean_analyze_and_print_results(self, time : str, seuil : float):
         """Analyze mean anomalies for a given day and print the results.
 
         Args:
