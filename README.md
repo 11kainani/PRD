@@ -68,8 +68,8 @@ from verification import Verification
 
 
 if __name__ == "__main__":
-    directory = "3ee1bd1f-01d8-4277-929d-53b1cebe457b"
-    FileManager("data/519a0d18-032d-4027-bd7f-21a1c39e8d89.csv")
+    directory = "[diretory_to_study]"
+    FileManager("[main csv file]")
     cal = Calculation(directory)
     ver = Verification(directory)
     model = Model_generator(directory)
