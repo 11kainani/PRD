@@ -52,7 +52,7 @@ class Calculation():
         if os.path.isdir(directory): 
             self.directory = directory
         else:
-            raise ValueError (f&#34;The directory entered ({directory}) isn&#39;t a directory&#34;) 
+            raise ValueError (f&#34;The directory entered ({directory}) isn&#39;t a directory. Use FileManager to create the directory seperation then select a correct directory by coping the relative path in the data directory. Beware to replace the the antislash by /&#34;) 
         self.site_id = os.path.basename(directory)
         
         &#34;Creation of the results sub directory&#34;
@@ -60,11 +60,11 @@ class Calculation():
         os.makedirs(self.results_directory,exist_ok=True)
         
 
-    def day_mean_simple_verification(self,date):
+    def day_mean_simple_verification(self,date:str):
             &#34;&#34;&#34;Calculate 
 
             Args:
-                date (panda date)[YYYY-MM-DD]: the date of the specific data
+                date (str)[YYYY-MM-DD]: the date of the specific data
                 normalized_data (dataframe): data that has been normalized with data_normalization()
 
             &#34;&#34;&#34;
@@ -105,7 +105,7 @@ class Calculation():
         
 
         
-    def day_rolling_average_calculation(self, date, window_size=4):
+    def day_rolling_average_calculation(self, date:str, window_size=4):
         &#34;&#34;&#34;Calculate the rolling average for the given date.
 
     Args:
@@ -146,7 +146,7 @@ class Calculation():
         
         return ma_data
     
-    def day_moving_average_expo_calculation(self, date, smoothing_factor = 0.5 ,window_size=4):
+    def day_moving_average_expo_calculation(self, date:str, smoothing_factor = 0.5 ,window_size=4):
         &#34;&#34;&#34;Calculate the exponential moving average for a given date.
 
         Args:
@@ -260,7 +260,7 @@ if __name__ == &#34;__main__&#34;:
         if os.path.isdir(directory): 
             self.directory = directory
         else:
-            raise ValueError (f&#34;The directory entered ({directory}) isn&#39;t a directory&#34;) 
+            raise ValueError (f&#34;The directory entered ({directory}) isn&#39;t a directory. Use FileManager to create the directory seperation then select a correct directory by coping the relative path in the data directory. Beware to replace the the antislash by /&#34;) 
         self.site_id = os.path.basename(directory)
         
         &#34;Creation of the results sub directory&#34;
@@ -268,11 +268,11 @@ if __name__ == &#34;__main__&#34;:
         os.makedirs(self.results_directory,exist_ok=True)
         
 
-    def day_mean_simple_verification(self,date):
+    def day_mean_simple_verification(self,date:str):
             &#34;&#34;&#34;Calculate 
 
             Args:
-                date (panda date)[YYYY-MM-DD]: the date of the specific data
+                date (str)[YYYY-MM-DD]: the date of the specific data
                 normalized_data (dataframe): data that has been normalized with data_normalization()
 
             &#34;&#34;&#34;
@@ -313,7 +313,7 @@ if __name__ == &#34;__main__&#34;:
         
 
         
-    def day_rolling_average_calculation(self, date, window_size=4):
+    def day_rolling_average_calculation(self, date:str, window_size=4):
         &#34;&#34;&#34;Calculate the rolling average for the given date.
 
     Args:
@@ -354,7 +354,7 @@ if __name__ == &#34;__main__&#34;:
         
         return ma_data
     
-    def day_moving_average_expo_calculation(self, date, smoothing_factor = 0.5 ,window_size=4):
+    def day_moving_average_expo_calculation(self, date:str, smoothing_factor = 0.5 ,window_size=4):
         &#34;&#34;&#34;Calculate the exponential moving average for a given date.
 
         Args:
@@ -413,13 +413,13 @@ if __name__ == &#34;__main__&#34;:
 <h3>Methods</h3>
 <dl>
 <dt id="projet.calculation.Calculation.day_mean_simple_verification"><code class="name flex">
-<span>def <span class="ident">day_mean_simple_verification</span></span>(<span>self, date)</span>
+<span>def <span class="ident">day_mean_simple_verification</span></span>(<span>self, date: str)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Calculate </p>
 <h2 id="args">Args</h2>
 <dl>
-<dt>date (panda date)[YYYY-MM-DD]: the date of the specific data</dt>
+<dt>date (str)[YYYY-MM-DD]: the date of the specific data</dt>
 <dt><strong><code>normalized_data</code></strong> :&ensp;<code>dataframe</code></dt>
 <dd>data that has been normalized with data_normalization()</dd>
 </dl></div>
@@ -427,11 +427,11 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def day_mean_simple_verification(self,date):
+<pre><code class="python">def day_mean_simple_verification(self,date:str):
         &#34;&#34;&#34;Calculate 
 
         Args:
-            date (panda date)[YYYY-MM-DD]: the date of the specific data
+            date (str)[YYYY-MM-DD]: the date of the specific data
             normalized_data (dataframe): data that has been normalized with data_normalization()
 
         &#34;&#34;&#34;
@@ -451,7 +451,7 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="projet.calculation.Calculation.day_moving_average_expo_calculation"><code class="name flex">
-<span>def <span class="ident">day_moving_average_expo_calculation</span></span>(<span>self, date, smoothing_factor=0.5, window_size=4)</span>
+<span>def <span class="ident">day_moving_average_expo_calculation</span></span>(<span>self, date: str, smoothing_factor=0.5, window_size=4)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Calculate the exponential moving average for a given date.</p>
@@ -473,7 +473,7 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def day_moving_average_expo_calculation(self, date, smoothing_factor = 0.5 ,window_size=4):
+<pre><code class="python">def day_moving_average_expo_calculation(self, date:str, smoothing_factor = 0.5 ,window_size=4):
     &#34;&#34;&#34;Calculate the exponential moving average for a given date.
 
     Args:
@@ -499,7 +499,7 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="projet.calculation.Calculation.day_rolling_average_calculation"><code class="name flex">
-<span>def <span class="ident">day_rolling_average_calculation</span></span>(<span>self, date, window_size=4)</span>
+<span>def <span class="ident">day_rolling_average_calculation</span></span>(<span>self, date: str, window_size=4)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Calculate the rolling average for the given date.</p>
@@ -518,7 +518,7 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def day_rolling_average_calculation(self, date, window_size=4):
+<pre><code class="python">def day_rolling_average_calculation(self, date:str, window_size=4):
     &#34;&#34;&#34;Calculate the rolling average for the given date.
 
 Args:

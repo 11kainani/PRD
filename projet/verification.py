@@ -128,7 +128,7 @@ class Verification:
             
         return all_first_anomalie_dict 
 
-
+        
     def day_anomalie_slope(self, date : str, seuil : float):
         """Calculate the slope of anomalies for a given date.
 
@@ -217,7 +217,9 @@ class Verification:
         """
         return time_obj.strftime('%H:%M:%S')
 
-    def following_error_drop_dict(self,following : dict,previous_data: dict):
+
+        
+    def following_error_drop_dict(self,following : dict,previous_data: dict ):
         """Combine following anomalies with their corresponding drop values.
 
         Args:
@@ -227,12 +229,13 @@ class Verification:
         Returns:
             dict: A dictionary containing following anomalies with drop values.
         """
+        
         result_dict = {}
         for key in following.keys():
             result_dict[key] = {}
             for time_key, value in following[key].items():
                 str_time_key = self.convert_time_to_str(time_key)
-                result_dict[key][str_time_key] = {'previous': value}
+                result_dict[key][str_time_key] = {'serie': value}
 
             for time_key, value in previous_data[key].items():
                 if isinstance(time_key, str) == False: 
@@ -282,7 +285,18 @@ class Verification:
 
         return result_time_str 
 
-    def day_analyze_and_print_results(self, directory:str, time:str, seuil:float):
+    def filter_drop_series(self, drop_series_dict : dict, drop = 0, serie = 2):
+        filtered_dict = {}
+        for category, values in drop_series_dict.items():
+            condition_respected_dict = {}
+            for key, results in values.items():
+                if results.get('drop') >= drop and results.get('serie') >= serie:
+                    condition_respected_dict[key]=results
+            filtered_dict[category] = condition_respected_dict
+        return (filtered_dict)
+                    
+            
+    def day_analyze_and_print_results(self, directory:str, time:str, seuil:float,  min_serie = 0, min_drop = 0):
         """Analyze anomalies for a given day and print the results.
 
         Args:
@@ -301,10 +315,12 @@ class Verification:
         previous_data = self.day_anomalie_slope(time, seuil)
 
         # Concatenate dictionaries with the desired format
-        result_dict = self.following_error_drop_dict(following, previous_data)
-        self.prettier_following_drop(result_dict)
+        drop_series_dict = self.following_error_drop_dict(following, previous_data)
+        filtered_drop_series_dict = self.filter_drop_series(drop_series_dict,min_drop,min_serie)
+        self.prettier_following_drop(filtered_drop_series_dict)
+        
 
-    def day_mean_analyze_and_print_results(self, time : str, seuil : float):
+    def day_mean_analyze_and_print_results(self, time : str, seuil : float, min_serie = 0, min_drop = 0):
         """Analyze mean anomalies for a given day and print the results.
 
         Args:
@@ -317,8 +333,11 @@ class Verification:
         abnormal =self.day_mean_zscore_verification(time, seuil)
         following = self.day_following_timestamps(abnormal)
         previous_data = self.day_mean_anomalie_slope(time,seuil)
-        result_dict = self.following_error_drop_dict(following, previous_data)
-        self.prettier_following_drop(result_dict)
+        
+        
+        drop_series_dict = self.following_error_drop_dict(following, previous_data)
+        filtered_drop_series_dict = self.filter_drop_series(drop_series_dict,min_drop,min_serie)
+        self.prettier_following_drop(filtered_drop_series_dict)
         
         
     def prettier_following_drop(self,result_dict):
@@ -332,10 +351,10 @@ class Verification:
         """
         for key, data in result_dict.items():
             print(f"\n{key} data:")
-            print("{:<12} {:<10} {:<10} {:<10}".format('Time', 'End_time' ,'Previous', 'Drop'))
+            print("{:<12} {:<10} {:<10} {:<10}".format('Time', 'End_time' ,'Serie', 'Drop'))
             for time_key, values in data.items():
                 print("{:<12} {:<10} {:<10} {:<10}".format(
-                    time_key, self.add_minutes_to_time(time_key, values.get('previous', '') ) , values.get('previous', ''), values.get('drop', '')
+                    time_key, self.add_minutes_to_time(time_key, values.get('serie', '') ) , values.get('serie', ''), values.get('drop', '')
                 ))
 
 
@@ -344,13 +363,16 @@ if __name__ == "__main__":
     directory = 'data/3ee1bd1f-01d8-4277-929d-53b1cebe457b'
     time = "2023-09-29"
     ver = Verification(directory)
+    Calculation(directory).day_mean_simple_verification(time)
     seuil = 2
+    min_serie =2
+    min_drop = 16
     
-    mean =False 
+    mean =True 
     if mean: 
-        ver.day_mean_analyze_and_print_results(time,seuil)
+        ver.day_mean_analyze_and_print_results(time,seuil,min_serie,min_drop)
     else:    
-        ver.day_analyze_and_print_results(directory,time,seuil)
+        ver.day_analyze_and_print_results(directory,time,seuil,min_serie,min_drop)
     
    
     

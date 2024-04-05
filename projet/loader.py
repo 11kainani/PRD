@@ -196,7 +196,7 @@ class Loader():
             break
         filtered_results = [result for result in results_list if result.startswith(f'r_d_{date}')]
         
-        assert len(filtered_results) != 0, "There is no result file for this specific date"
+        assert len(filtered_results) != 0, "There is no result file for this specific date. Use the calculation class (méthode: day_mean_simple_verification) to create the appropriate file"
 
         results_data = pd.read_csv(f'{self.results_directory}/{filtered_results[0]}', index_col=0)
 
@@ -245,16 +245,29 @@ class Loader():
         for unique_date, data in data.iterrows(): 
             dates.append(data["datetime"])
         return dates
-             
+
+    def week_data(self,start_date : str):
+        """Unfinished"""
+        
+        data = self.main_data()
+        data['datetime'] = pd.to_datetime(data['datetime'])
+        start_date = pd.to_datetime(str) 
+
+        end_date = start_date + pd.DateOffset(days=6)
+
+        week_data = data[(data['datetime'] >= start_date) & (data['datetime'] <= end_date)]
+
+        week_data['date'] = week_data['datetime'].dt.date  
+        return week_data          
 if __name__ == "__main__": 
     obb = Loader("data/0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")
-    print(obb.get_available_dates_dataframe(obb.data_for_day("2023-10-10")))
+    #print(obb.get_available_dates_dataframe(obb.data_for_day("2023-10-10")))
     #print(obb.data_model_from_file("friday"))
     #c,d = obb.data_for_day_with_selection()
     #print(c)
     #obb.data_for_week("2023-10-01")
     #print(obb.day_result("2023-10-01"))
-    week = obb.data_grouped_by_week()
-    
+    #week = obb.data_grouped_by_week()
+    print(obb.week_data('2023-10-01'))
 
  

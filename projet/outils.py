@@ -1,6 +1,8 @@
 import pandas as pd
 from statsmodels.tsa.stattools import adfuller
 from loader import Loader
+from model_generator import Model_generator
+from calculation import Calculation
  
 # import python numpy package
 import numpy as np
@@ -23,6 +25,8 @@ class Outils:
 if __name__ == '__main__':
     directory = 'data/3ee1bd1f-01d8-4277-929d-53b1cebe457b'
     load = Loader(directory)
-    data = load.main_data()
+    Model_generator(directory)
+    Calculation(directory).day_mean_simple_verification("2023-10-10")
+    data = load.day_mean_result("2023-10-10")
     outils = Outils()
     outils.isStationnary(data)

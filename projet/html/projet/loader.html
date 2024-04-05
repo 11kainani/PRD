@@ -49,8 +49,11 @@ class Loader():
                 self.main_data_file = main
             else: 
                 raise ValueError(&#34;The directory doesn&#39;t have the main data file(csv)&#34;)
-            assert os.path.isdir(f&#39;{self.directory}/results&#39;), &#34;The selected directory doesn&#39;t have any results&#34;
-            self.results_directory = f&#39;{self.directory}/results&#39;
+            
+            results_path = f&#39;{self.directory}/results&#39;
+            if not os.path.isdir(results_path):
+                os.makedirs(results_path)
+            self.results_directory = results_path
 
     def main_data(self): 
         data = pd.read_csv(self.main_data_file)
@@ -122,11 +125,11 @@ class Loader():
     
         return selected_date,data_to_date[selected_date]
     
-    def data_for_day(self, date):
+    def data_for_day(self, date:str):
         &#34;&#34;&#34;_summary_
 
         Args:
-            date (pandas.Dataframe.date): The date for the data selected. The format for the date is YYYY-MM-DD
+            date (str): The date for the data selected. The format for the date is YYYY-MM-DD
 
         Returns:
             _type_: _description_
@@ -158,7 +161,16 @@ class Loader():
         
         return selected_data
 
-    def data_for_week(self, start_date_str):
+    def data_for_week(self, start_date_str: str):
+        &#34;&#34;&#34;
+        Generates a dictionary of data for the next seven days starting from the given start date.
+        
+        Args:
+            start_date_str (str): The start date in the format &#39;YYYY-MM-DD&#39;.
+            
+        Returns:
+            tuple: A tuple containing a dictionary of data for the next seven days and a list of dates with missing data.
+        &#34;&#34;&#34;
         empty_set = []
         #get the date for the seven next days 
         start_date = datetime.strptime(start_date_str, &#34;%Y-%m-%d&#34;).date()
@@ -172,7 +184,17 @@ class Loader():
 
         #Check if the date has the according data 
 
-    def generate_date_dict(self, start_date, end_date):
+    def generate_date_dict(self, start_date:str, end_date:str):
+        &#34;&#34;&#34;
+        Generates a dictionary with data for each date within the specified range.
+        
+        Args:
+            start_date (str): The start date in the format &#39;YYYY-MM-DD&#39;.
+            end_date (str): The end date in the format &#39;YYYY-MM-DD&#39;.
+            
+        Returns:
+            dict: A dictionary with data for each date within the specified range.
+        &#34;&#34;&#34;
    
         date_dict = {}
         current_date = start_date
@@ -185,6 +207,16 @@ class Loader():
         return date_dict
 
     def day_mean_result(self, date: str):
+        &#34;&#34;&#34; Retrieves the mean results for a specific date.
+
+        Args:
+            date (str): The date for which the mean results are required in the format &#39;YYYY-MM-DD&#39;.
+
+        DataFrame: A DataFrame containing the mean results for the specified date.
+        
+        Raises:
+            AssertionError: If there is no result file for the specified date.
+        &#34;&#34;&#34;
         results_list = []
 
         for (dirpath, dirnames, filenames) in os.walk(self.results_directory):
@@ -199,6 +231,12 @@ class Loader():
         return results_data
 
     def data_grouped_by_week(self):
+        &#34;&#34;&#34;
+        Groups the main data by week.
+        
+        Returns:
+            DataFrameGroupBy: A DataFrameGroupBy object containing the main data grouped by week.
+        &#34;&#34;&#34;
         dataset = self.main_data()
         dataset[&#39;datetime&#39;] = pd.to_datetime(dataset[&#39;datetime&#39;])
         dataset[&#39;dayname&#39;] = dataset[&#39;datetime&#39;].dt.day_name()
@@ -208,18 +246,46 @@ class Loader():
         data_weekly = dataset.groupby([pd.Grouper(key=&#39;datetime&#39;, freq=&#39;W&#39;)])
         
         return data_weekly
+
+    def get_available_dates(self):
+        &#34;&#34;&#34;
+        Retrieves available dates from the main data.
+        
+        Returns:
+            list: A list of available dates.
+        &#34;&#34;&#34;
+        dates = list()
+        for unique_date, data in self.main_data().iterrows(): 
+            dates.append(data[&#34;datetime&#34;])
+        return dates
+
+    def  get_available_dates_dataframe(self, data: pd.DataFrame):
+        &#34;&#34;&#34;
+        Retrieves available dates from the provided DataFrame.
+        
+        Args:
+            data (pd.DataFrame): The DataFrame containing the data.
+            
+        Returns:
+            list: A list of available dates.
+        &#34;&#34;&#34;
+        dates = list()
+        for unique_date, data in data.iterrows(): 
+            dates.append(data[&#34;datetime&#34;])
+        return dates
              
 if __name__ == &#34;__main__&#34;: 
-    obb = Loader(&#34;0a1b3040-2c06-4cce-8acf-38d6fc99b9f7&#34;)
+    obb = Loader(&#34;data/0a1b3040-2c06-4cce-8acf-38d6fc99b9f7&#34;)
+    print(obb.get_available_dates_dataframe(obb.data_for_day(&#34;2023-10-10&#34;)))
     #print(obb.data_model_from_file(&#34;friday&#34;))
     #c,d = obb.data_for_day_with_selection()
     #print(c)
     #obb.data_for_week(&#34;2023-10-01&#34;)
     #print(obb.day_result(&#34;2023-10-01&#34;))
     week = obb.data_grouped_by_week()
+    
 
-    for index, data in week: 
-        print(data)</code></pre>
+ </code></pre>
 </details>
 </section>
 <section>
@@ -260,8 +326,11 @@ if __name__ == &#34;__main__&#34;:
                 self.main_data_file = main
             else: 
                 raise ValueError(&#34;The directory doesn&#39;t have the main data file(csv)&#34;)
-            assert os.path.isdir(f&#39;{self.directory}/results&#39;), &#34;The selected directory doesn&#39;t have any results&#34;
-            self.results_directory = f&#39;{self.directory}/results&#39;
+            
+            results_path = f&#39;{self.directory}/results&#39;
+            if not os.path.isdir(results_path):
+                os.makedirs(results_path)
+            self.results_directory = results_path
 
     def main_data(self): 
         data = pd.read_csv(self.main_data_file)
@@ -333,11 +402,11 @@ if __name__ == &#34;__main__&#34;:
     
         return selected_date,data_to_date[selected_date]
     
-    def data_for_day(self, date):
+    def data_for_day(self, date:str):
         &#34;&#34;&#34;_summary_
 
         Args:
-            date (pandas.Dataframe.date): The date for the data selected. The format for the date is YYYY-MM-DD
+            date (str): The date for the data selected. The format for the date is YYYY-MM-DD
 
         Returns:
             _type_: _description_
@@ -369,7 +438,16 @@ if __name__ == &#34;__main__&#34;:
         
         return selected_data
 
-    def data_for_week(self, start_date_str):
+    def data_for_week(self, start_date_str: str):
+        &#34;&#34;&#34;
+        Generates a dictionary of data for the next seven days starting from the given start date.
+        
+        Args:
+            start_date_str (str): The start date in the format &#39;YYYY-MM-DD&#39;.
+            
+        Returns:
+            tuple: A tuple containing a dictionary of data for the next seven days and a list of dates with missing data.
+        &#34;&#34;&#34;
         empty_set = []
         #get the date for the seven next days 
         start_date = datetime.strptime(start_date_str, &#34;%Y-%m-%d&#34;).date()
@@ -383,7 +461,17 @@ if __name__ == &#34;__main__&#34;:
 
         #Check if the date has the according data 
 
-    def generate_date_dict(self, start_date, end_date):
+    def generate_date_dict(self, start_date:str, end_date:str):
+        &#34;&#34;&#34;
+        Generates a dictionary with data for each date within the specified range.
+        
+        Args:
+            start_date (str): The start date in the format &#39;YYYY-MM-DD&#39;.
+            end_date (str): The end date in the format &#39;YYYY-MM-DD&#39;.
+            
+        Returns:
+            dict: A dictionary with data for each date within the specified range.
+        &#34;&#34;&#34;
    
         date_dict = {}
         current_date = start_date
@@ -396,6 +484,16 @@ if __name__ == &#34;__main__&#34;:
         return date_dict
 
     def day_mean_result(self, date: str):
+        &#34;&#34;&#34; Retrieves the mean results for a specific date.
+
+        Args:
+            date (str): The date for which the mean results are required in the format &#39;YYYY-MM-DD&#39;.
+
+        DataFrame: A DataFrame containing the mean results for the specified date.
+        
+        Raises:
+            AssertionError: If there is no result file for the specified date.
+        &#34;&#34;&#34;
         results_list = []
 
         for (dirpath, dirnames, filenames) in os.walk(self.results_directory):
@@ -410,6 +508,12 @@ if __name__ == &#34;__main__&#34;:
         return results_data
 
     def data_grouped_by_week(self):
+        &#34;&#34;&#34;
+        Groups the main data by week.
+        
+        Returns:
+            DataFrameGroupBy: A DataFrameGroupBy object containing the main data grouped by week.
+        &#34;&#34;&#34;
         dataset = self.main_data()
         dataset[&#39;datetime&#39;] = pd.to_datetime(dataset[&#39;datetime&#39;])
         dataset[&#39;dayname&#39;] = dataset[&#39;datetime&#39;].dt.day_name()
@@ -418,18 +522,45 @@ if __name__ == &#34;__main__&#34;:
         dataset.set_index(&#39;datetime&#39;)
         data_weekly = dataset.groupby([pd.Grouper(key=&#39;datetime&#39;, freq=&#39;W&#39;)])
         
-        return data_weekly</code></pre>
+        return data_weekly
+
+    def get_available_dates(self):
+        &#34;&#34;&#34;
+        Retrieves available dates from the main data.
+        
+        Returns:
+            list: A list of available dates.
+        &#34;&#34;&#34;
+        dates = list()
+        for unique_date, data in self.main_data().iterrows(): 
+            dates.append(data[&#34;datetime&#34;])
+        return dates
+
+    def  get_available_dates_dataframe(self, data: pd.DataFrame):
+        &#34;&#34;&#34;
+        Retrieves available dates from the provided DataFrame.
+        
+        Args:
+            data (pd.DataFrame): The DataFrame containing the data.
+            
+        Returns:
+            list: A list of available dates.
+        &#34;&#34;&#34;
+        dates = list()
+        for unique_date, data in data.iterrows(): 
+            dates.append(data[&#34;datetime&#34;])
+        return dates</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="projet.loader.Loader.data_for_day"><code class="name flex">
-<span>def <span class="ident">data_for_day</span></span>(<span>self, date)</span>
+<span>def <span class="ident">data_for_day</span></span>(<span>self, date: str)</span>
 </code></dt>
 <dd>
 <div class="desc"><p><em>summary</em></p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>date</code></strong> :&ensp;<code>pandas.Dataframe.date</code></dt>
+<dt><strong><code>date</code></strong> :&ensp;<code>str</code></dt>
 <dd>The date for the data selected. The format for the date is YYYY-MM-DD</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -441,11 +572,11 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def data_for_day(self, date):
+<pre><code class="python">def data_for_day(self, date:str):
     &#34;&#34;&#34;_summary_
 
     Args:
-        date (pandas.Dataframe.date): The date for the data selected. The format for the date is YYYY-MM-DD
+        date (str): The date for the data selected. The format for the date is YYYY-MM-DD
 
     Returns:
         _type_: _description_
@@ -531,15 +662,34 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="projet.loader.Loader.data_for_week"><code class="name flex">
-<span>def <span class="ident">data_for_week</span></span>(<span>self, start_date_str)</span>
+<span>def <span class="ident">data_for_week</span></span>(<span>self, start_date_str: str)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Generates a dictionary of data for the next seven days starting from the given start date.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>start_date_str</code></strong> :&ensp;<code>str</code></dt>
+<dd>The start date in the format 'YYYY-MM-DD'.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>A tuple containing a dictionary of data for the next seven days and a list of dates with missing data.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def data_for_week(self, start_date_str):
+<pre><code class="python">def data_for_week(self, start_date_str: str):
+    &#34;&#34;&#34;
+    Generates a dictionary of data for the next seven days starting from the given start date.
+    
+    Args:
+        start_date_str (str): The start date in the format &#39;YYYY-MM-DD&#39;.
+        
+    Returns:
+        tuple: A tuple containing a dictionary of data for the next seven days and a list of dates with missing data.
+    &#34;&#34;&#34;
     empty_set = []
     #get the date for the seven next days 
     start_date = datetime.strptime(start_date_str, &#34;%Y-%m-%d&#34;).date()
@@ -558,12 +708,23 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">data_grouped_by_week</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Groups the main data by week.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>DataFrameGroupBy</code></dt>
+<dd>A DataFrameGroupBy object containing the main data grouped by week.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def data_grouped_by_week(self):
+    &#34;&#34;&#34;
+    Groups the main data by week.
+    
+    Returns:
+        DataFrameGroupBy: A DataFrameGroupBy object containing the main data grouped by week.
+    &#34;&#34;&#34;
     dataset = self.main_data()
     dataset[&#39;datetime&#39;] = pd.to_datetime(dataset[&#39;datetime&#39;])
     dataset[&#39;dayname&#39;] = dataset[&#39;datetime&#39;].dt.day_name()
@@ -630,12 +791,33 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">day_mean_result</span></span>(<span>self, date: str)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Retrieves the mean results for a specific date.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>date</code></strong> :&ensp;<code>str</code></dt>
+<dd>The date for which the mean results are required in the format 'YYYY-MM-DD'.</dd>
+</dl>
+<p>DataFrame: A DataFrame containing the mean results for the specified date.</p>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>AssertionError</code></dt>
+<dd>If there is no result file for the specified date.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def day_mean_result(self, date: str):
+    &#34;&#34;&#34; Retrieves the mean results for a specific date.
+
+    Args:
+        date (str): The date for which the mean results are required in the format &#39;YYYY-MM-DD&#39;.
+
+    DataFrame: A DataFrame containing the mean results for the specified date.
+    
+    Raises:
+        AssertionError: If there is no result file for the specified date.
+    &#34;&#34;&#34;
     results_list = []
 
     for (dirpath, dirnames, filenames) in os.walk(self.results_directory):
@@ -651,15 +833,37 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="projet.loader.Loader.generate_date_dict"><code class="name flex">
-<span>def <span class="ident">generate_date_dict</span></span>(<span>self, start_date, end_date)</span>
+<span>def <span class="ident">generate_date_dict</span></span>(<span>self, start_date: str, end_date: str)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Generates a dictionary with data for each date within the specified range.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>start_date</code></strong> :&ensp;<code>str</code></dt>
+<dd>The start date in the format 'YYYY-MM-DD'.</dd>
+<dt><strong><code>end_date</code></strong> :&ensp;<code>str</code></dt>
+<dd>The end date in the format 'YYYY-MM-DD'.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>A dictionary with data for each date within the specified range.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def generate_date_dict(self, start_date, end_date):
+<pre><code class="python">def generate_date_dict(self, start_date:str, end_date:str):
+    &#34;&#34;&#34;
+    Generates a dictionary with data for each date within the specified range.
+    
+    Args:
+        start_date (str): The start date in the format &#39;YYYY-MM-DD&#39;.
+        end_date (str): The end date in the format &#39;YYYY-MM-DD&#39;.
+        
+    Returns:
+        dict: A dictionary with data for each date within the specified range.
+    &#34;&#34;&#34;
 
     date_dict = {}
     current_date = start_date
@@ -670,6 +874,68 @@ if __name__ == &#34;__main__&#34;:
         date_dict[current_date] = current_date_data
         current_date += timedelta(days=1)
     return date_dict</code></pre>
+</details>
+</dd>
+<dt id="projet.loader.Loader.get_available_dates"><code class="name flex">
+<span>def <span class="ident">get_available_dates</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrieves available dates from the main data.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>A list of available dates.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_available_dates(self):
+    &#34;&#34;&#34;
+    Retrieves available dates from the main data.
+    
+    Returns:
+        list: A list of available dates.
+    &#34;&#34;&#34;
+    dates = list()
+    for unique_date, data in self.main_data().iterrows(): 
+        dates.append(data[&#34;datetime&#34;])
+    return dates</code></pre>
+</details>
+</dd>
+<dt id="projet.loader.Loader.get_available_dates_dataframe"><code class="name flex">
+<span>def <span class="ident">get_available_dates_dataframe</span></span>(<span>self, data: pandas.core.frame.DataFrame)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrieves available dates from the provided DataFrame.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>pd.DataFrame</code></dt>
+<dd>The DataFrame containing the data.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>A list of available dates.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  get_available_dates_dataframe(self, data: pd.DataFrame):
+    &#34;&#34;&#34;
+    Retrieves available dates from the provided DataFrame.
+    
+    Args:
+        data (pd.DataFrame): The DataFrame containing the data.
+        
+    Returns:
+        list: A list of available dates.
+    &#34;&#34;&#34;
+    dates = list()
+    for unique_date, data in data.iterrows(): 
+        dates.append(data[&#34;datetime&#34;])
+    return dates</code></pre>
 </details>
 </dd>
 <dt id="projet.loader.Loader.main_data"><code class="name flex">
@@ -714,6 +980,8 @@ if __name__ == &#34;__main__&#34;:
 <li><code><a title="projet.loader.Loader.data_model_from_file" href="#projet.loader.Loader.data_model_from_file">data_model_from_file</a></code></li>
 <li><code><a title="projet.loader.Loader.day_mean_result" href="#projet.loader.Loader.day_mean_result">day_mean_result</a></code></li>
 <li><code><a title="projet.loader.Loader.generate_date_dict" href="#projet.loader.Loader.generate_date_dict">generate_date_dict</a></code></li>
+<li><code><a title="projet.loader.Loader.get_available_dates" href="#projet.loader.Loader.get_available_dates">get_available_dates</a></code></li>
+<li><code><a title="projet.loader.Loader.get_available_dates_dataframe" href="#projet.loader.Loader.get_available_dates_dataframe">get_available_dates_dataframe</a></code></li>
 <li><code><a title="projet.loader.Loader.main_data" href="#projet.loader.Loader.main_data">main_data</a></code></li>
 </ul>
 </li>

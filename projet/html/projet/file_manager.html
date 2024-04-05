@@ -46,7 +46,7 @@ class FileManager():
         self.base_csv_file = None 
         &#34;&#34;&#34;The current file to be studied -&gt; This file corresponds to the csv file containing all the information about the specific site&#34;&#34;&#34;
         self.tag_division()
-        self.saving_preprocess()
+        #self.saving_preprocess()
 
     def tag_division(self):
         &#34;&#34;&#34;Divide the main data file into seperate csv file grouped by thier tagid which is the site identification.
@@ -121,7 +121,7 @@ class FileManager():
         }
         return week_index[week_number]
 
-    def filter_and_save_data(self,data, date_groups):
+    def filter_and_save_data(self,data : pd.DataFrame, date_groups):
         &#34;&#34;&#34;
         Filters the data of a site accordining to the unique dates in date_groups and creates seperate files that containes the informations for all the data in that specific day
         Creates weekdays directory
@@ -267,7 +267,7 @@ if __name__ == &#34;__main__&#34;:
         self.base_csv_file = None 
         &#34;&#34;&#34;The current file to be studied -&gt; This file corresponds to the csv file containing all the information about the specific site&#34;&#34;&#34;
         self.tag_division()
-        self.saving_preprocess()
+        #self.saving_preprocess()
 
     def tag_division(self):
         &#34;&#34;&#34;Divide the main data file into seperate csv file grouped by thier tagid which is the site identification.
@@ -342,7 +342,7 @@ if __name__ == &#34;__main__&#34;:
         }
         return week_index[week_number]
 
-    def filter_and_save_data(self,data, date_groups):
+    def filter_and_save_data(self,data : pd.DataFrame, date_groups):
         &#34;&#34;&#34;
         Filters the data of a site accordining to the unique dates in date_groups and creates seperate files that containes the informations for all the data in that specific day
         Creates weekdays directory
@@ -547,7 +547,7 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="projet.file_manager.FileManager.filter_and_save_data"><code class="name flex">
-<span>def <span class="ident">filter_and_save_data</span></span>(<span>self, data, date_groups)</span>
+<span>def <span class="ident">filter_and_save_data</span></span>(<span>self, data: pandas.core.frame.DataFrame, date_groups)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Filters the data of a site accordining to the unique dates in date_groups and creates seperate files that containes the informations for all the data in that specific day
@@ -562,7 +562,7 @@ Creates weekdays directory</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def filter_and_save_data(self,data, date_groups):
+<pre><code class="python">def filter_and_save_data(self,data : pd.DataFrame, date_groups):
     &#34;&#34;&#34;
     Filters the data of a site accordining to the unique dates in date_groups and creates seperate files that containes the informations for all the data in that specific day
     Creates weekdays directory

@@ -24,7 +24,7 @@ class Calculation():
         if os.path.isdir(directory): 
             self.directory = directory
         else:
-            raise ValueError (f"The directory entered ({directory}) isn't a directory \n Use FileManager to create the directory seperation then select a correct directory by coping the relative path in the data directory. Beware to replace the \ by /") 
+            raise ValueError (f"The directory entered ({directory}) isn't a directory. Use FileManager to create the directory seperation then select a correct directory by coping the relative path in the data directory. Beware to replace the the antislash by /") 
         self.site_id = os.path.basename(directory)
         
         "Creation of the results sub directory"

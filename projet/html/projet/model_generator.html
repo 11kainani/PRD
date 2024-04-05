@@ -32,6 +32,14 @@ from datetime import datetime, timedelta
 from loader import Loader
 
 class Model_generator(): 
+    &#34;&#34;&#34;Initialize the Model_generator class with the directory containing data files.
+
+        Args:
+            directory (str): The directory path containing the data files.
+
+        Raises:
+            ValueError: If the directory is None or invalid.
+        &#34;&#34;&#34;
     def __init__(self, directory):
         self.directory = None 
         self.base_file = None
@@ -57,7 +65,15 @@ class Model_generator():
         
         
     def mean_per_day(self): 
-        &#34;&#34;&#34;Generate the model file for each day of the week
+        &#34;&#34;&#34;Generate model files for each day of the week based on the provided data.
+
+        The generated model files will contain mean values of revenue, auctions, and impressions
+        for each time interval within a day.
+
+        The models are saved in csv files
+
+        Returns:
+            None
         &#34;&#34;&#34;
         csv_file = self.base_file
         data = pd.read_csv(csv_file)
@@ -80,6 +96,14 @@ class Model_generator():
             data_means.to_csv(f&#39;{self.directory}/models/model_{str.lower(day_of_week)}.csv&#39;, index=False)
 
     def mean_per_weekend(self): 
+        &#34;&#34;&#34;Generate a model file for weekends based on the provided data.
+
+        The generated model file will contain mean values of revenue, auctions, and impressions
+        for each weekend day.
+
+        Returns:
+            dict: A dictionary containing the mean values for each weekend day.
+        &#34;&#34;&#34;
         csv_file = self.base_file
         data = pd.read_csv(csv_file, parse_dates=[&#34;datetime&#34;])
         data[&#34;date&#34;] = data[&#34;datetime&#34;].dt.date
@@ -110,6 +134,14 @@ class Model_generator():
         return weekend_dic
     
     def mean_week(self):
+        &#34;&#34;&#34;Generate a model file for the entire week based on the provided data.
+
+        The generated model file will contain mean values of revenue, auctions, and impressions
+        for each day of the week.
+
+        Returns:
+            pd.DataFrame: A DataFrame containing the mean values for each day of the week.
+        &#34;&#34;&#34;
         data_means = pd.DataFrame()
         dataset = Loader(self.directory).main_data()
         dataset[&#39;datetime&#39;] = pd.to_datetime(dataset[&#39;datetime&#39;])
@@ -148,12 +180,30 @@ if __name__ == &#34;__main__&#34;:
 <span>(</span><span>directory)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Initialize the Model_generator class with the directory containing data files.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>directory</code></strong> :&ensp;<code>str</code></dt>
+<dd>The directory path containing the data files.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the directory is None or invalid.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Model_generator(): 
+    &#34;&#34;&#34;Initialize the Model_generator class with the directory containing data files.
+
+        Args:
+            directory (str): The directory path containing the data files.
+
+        Raises:
+            ValueError: If the directory is None or invalid.
+        &#34;&#34;&#34;
     def __init__(self, directory):
         self.directory = None 
         self.base_file = None
@@ -179,7 +229,15 @@ if __name__ == &#34;__main__&#34;:
         
         
     def mean_per_day(self): 
-        &#34;&#34;&#34;Generate the model file for each day of the week
+        &#34;&#34;&#34;Generate model files for each day of the week based on the provided data.
+
+        The generated model files will contain mean values of revenue, auctions, and impressions
+        for each time interval within a day.
+
+        The models are saved in csv files
+
+        Returns:
+            None
         &#34;&#34;&#34;
         csv_file = self.base_file
         data = pd.read_csv(csv_file)
@@ -202,6 +260,14 @@ if __name__ == &#34;__main__&#34;:
             data_means.to_csv(f&#39;{self.directory}/models/model_{str.lower(day_of_week)}.csv&#39;, index=False)
 
     def mean_per_weekend(self): 
+        &#34;&#34;&#34;Generate a model file for weekends based on the provided data.
+
+        The generated model file will contain mean values of revenue, auctions, and impressions
+        for each weekend day.
+
+        Returns:
+            dict: A dictionary containing the mean values for each weekend day.
+        &#34;&#34;&#34;
         csv_file = self.base_file
         data = pd.read_csv(csv_file, parse_dates=[&#34;datetime&#34;])
         data[&#34;date&#34;] = data[&#34;datetime&#34;].dt.date
@@ -232,6 +298,14 @@ if __name__ == &#34;__main__&#34;:
         return weekend_dic
     
     def mean_week(self):
+        &#34;&#34;&#34;Generate a model file for the entire week based on the provided data.
+
+        The generated model file will contain mean values of revenue, auctions, and impressions
+        for each day of the week.
+
+        Returns:
+            pd.DataFrame: A DataFrame containing the mean values for each day of the week.
+        &#34;&#34;&#34;
         data_means = pd.DataFrame()
         dataset = Loader(self.directory).main_data()
         dataset[&#39;datetime&#39;] = pd.to_datetime(dataset[&#39;datetime&#39;])
@@ -253,13 +327,26 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">mean_per_day</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Generate the model file for each day of the week</p></div>
+<div class="desc"><p>Generate model files for each day of the week based on the provided data.</p>
+<p>The generated model files will contain mean values of revenue, auctions, and impressions
+for each time interval within a day.</p>
+<p>The models are saved in csv files</p>
+<h2 id="returns">Returns</h2>
+<p>None</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def mean_per_day(self): 
-    &#34;&#34;&#34;Generate the model file for each day of the week
+    &#34;&#34;&#34;Generate model files for each day of the week based on the provided data.
+
+    The generated model files will contain mean values of revenue, auctions, and impressions
+    for each time interval within a day.
+
+    The models are saved in csv files
+
+    Returns:
+        None
     &#34;&#34;&#34;
     csv_file = self.base_file
     data = pd.read_csv(csv_file)
@@ -286,12 +373,27 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">mean_per_weekend</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Generate a model file for weekends based on the provided data.</p>
+<p>The generated model file will contain mean values of revenue, auctions, and impressions
+for each weekend day.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>A dictionary containing the mean values for each weekend day.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def mean_per_weekend(self): 
+    &#34;&#34;&#34;Generate a model file for weekends based on the provided data.
+
+    The generated model file will contain mean values of revenue, auctions, and impressions
+    for each weekend day.
+
+    Returns:
+        dict: A dictionary containing the mean values for each weekend day.
+    &#34;&#34;&#34;
     csv_file = self.base_file
     data = pd.read_csv(csv_file, parse_dates=[&#34;datetime&#34;])
     data[&#34;date&#34;] = data[&#34;datetime&#34;].dt.date
@@ -326,12 +428,27 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">mean_week</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Generate a model file for the entire week based on the provided data.</p>
+<p>The generated model file will contain mean values of revenue, auctions, and impressions
+for each day of the week.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>pd.DataFrame</code></dt>
+<dd>A DataFrame containing the mean values for each day of the week.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def mean_week(self):
+    &#34;&#34;&#34;Generate a model file for the entire week based on the provided data.
+
+    The generated model file will contain mean values of revenue, auctions, and impressions
+    for each day of the week.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the mean values for each day of the week.
+    &#34;&#34;&#34;
     data_means = pd.DataFrame()
     dataset = Loader(self.directory).main_data()
     dataset[&#39;datetime&#39;] = pd.to_datetime(dataset[&#39;datetime&#39;])
