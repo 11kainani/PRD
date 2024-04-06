@@ -247,17 +247,44 @@ class Loader():
         return dates
 
     def week_data(self,start_date : str):
-        """Unfinished"""
+        """Retreive a weeks data by the start date
+
+        Args:
+            start_date (str): le start date of the week
+
+        Returns:
+            pd.DataDrame: a week worth of data
+        """
         
         data = self.main_data()
+        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+        end_date = start_date + timedelta(days=7)
+
         data['datetime'] = pd.to_datetime(data['datetime'])
-        start_date = pd.to_datetime(str) 
+        data['date'] = data['datetime'].dt.date
 
-        end_date = start_date + pd.DateOffset(days=6)
+        week_data = data[(data['date'] >= start_date) & (data['date'] <= end_date)]
 
-        week_data = data[(data['datetime'] >= start_date) & (data['datetime'] <= end_date)]
+        return week_data 
+    def month_data(self,start_date : str):
+        """Retreive a month's worth of data starting by the start date(Not clearly a month but 4 weeks)
 
-        week_data['date'] = week_data['datetime'].dt.date  
+        Args:
+            start_date (str): le start date of the month
+
+        Returns:
+            pd.DataDrame: a month worth of data(Not clearly a month but 4 weeks)
+        """
+        
+        data = self.main_data()
+        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+        end_date = start_date + timedelta(weeks=4)
+
+        data['datetime'] = pd.to_datetime(data['datetime'])
+        data['date'] = data['datetime'].dt.date
+
+        week_data = data[(data['date'] >= start_date) & (data['date'] <= end_date)]
+
         return week_data          
 if __name__ == "__main__": 
     obb = Loader("data/0a1b3040-2c06-4cce-8acf-38d6fc99b9f7")

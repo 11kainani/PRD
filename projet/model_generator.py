@@ -135,4 +135,5 @@ if __name__ == "__main__":
     directory = "0a1b3040-2c06-4cce-8acf-38d6fc99b9f7"
     msl = Model_generator(directory)
     msl.mean_per_day()
+    msl.mean_week()
     

@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np 
 import os
+from normalise import Normalise
 from datetime import datetime, timedelta
 from collections import defaultdict
 from tabulate import tabulate
@@ -36,6 +37,9 @@ class Verification:
         self.site_id = os.path.basename(directory)
         assert os.path.isdir(f'{self.directory}/results'), "The selected directory doesn't have any results"
         self.results_directory = f'{self.directory}/results'
+        self.normalise = Normalise(directory)
+        self.loader = Loader(directory)
+        self.calcul = Calculation(directory)
 
     def day_mean_zscore_verification(self,date,seuil = 3):
         """Verify the z-scores for a given date and return anomalies.
@@ -63,7 +67,7 @@ class Verification:
         
         return anomalies
 
-    def day_z_score_verification(self, data: pd.DataFrame, seuil : float):
+    def z_score_verification(self, data: pd.DataFrame, seuil : float):
         """Verify z-scores for a given DataFrame and return anomalies.
 
         Args:
@@ -144,7 +148,7 @@ class Verification:
         zscore_calculation_data = Calculation(self.directory).zscore_verification(day_data)
         index_list = zscore_calculation_data.index.tolist()
         index_list.sort()
-        errors = self.day_z_score_verification(zscore_calculation_data,seuil)
+        errors = self.z_score_verification(zscore_calculation_data,seuil)
         anomalies = self.day_following_timestamps(errors)
         anomalie_slope = {}
         error_dict = {}
@@ -310,7 +314,7 @@ class Verification:
         day_data = Loader(directory).data_for_day(time)
         results_data = Calculation(directory).zscore_verification(day_data)
         
-        abnormal = self.day_z_score_verification(results_data, seuil)
+        abnormal = self.z_score_verification(results_data, seuil)
         following = self.day_following_timestamps(abnormal)
         previous_data = self.day_anomalie_slope(time, seuil)
 
@@ -331,6 +335,28 @@ class Verification:
             None
         """
         abnormal =self.day_mean_zscore_verification(time, seuil)
+        following = self.day_following_timestamps(abnormal)
+        previous_data = self.day_mean_anomalie_slope(time,seuil)
+        
+        
+        drop_series_dict = self.following_error_drop_dict(following, previous_data)
+        filtered_drop_series_dict = self.filter_drop_series(drop_series_dict,min_drop,min_serie)
+        self.prettier_following_drop(filtered_drop_series_dict)
+
+    def week_analyze_and_print_results(self, start_date : str, seuil : float, min_serie = 0, min_drop = 0):
+        """Analyze mean anomalies for a given day and print the results.
+
+        Args:
+            time (str): The date to be analyzed.
+            seuil (int): The threshold value for z-score anomalies.
+
+        Returns:
+            None
+        """
+        week_data = self.loader.week_data(start_date)
+        zscored_data =self.calcul.zscore_verification(week_data)
+        abnormal =  self.z_score_verification(zscored_data,seuil)
+        
         following = self.day_following_timestamps(abnormal)
         previous_data = self.day_mean_anomalie_slope(time,seuil)
         
