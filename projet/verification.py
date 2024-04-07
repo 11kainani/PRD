@@ -8,6 +8,7 @@ from tabulate import tabulate
 import csv 
 from loader import Loader
 from calculation import Calculation
+from statsmodels.tsa.stattools import adfuller
 
 def remove_zscore_key_word(item :str):
             keyword = 'z_score_'
@@ -132,6 +133,7 @@ class Verification:
             
         return all_first_anomalie_dict 
 
+            
         
     def day_anomalie_slope(self, date : str, seuil : float):
         """Calculate the slope of anomalies for a given date.
@@ -250,7 +252,7 @@ class Verification:
                 result_dict[key][str_time_key]['drop'] = value
         return result_dict
         
-    def save_following_drop_csv(result_dict: dict):
+    def _save_following_drop_csv(result_dict: dict):
         """Save following anomalies with drop values to a CSV file.
 
         Args:
@@ -273,7 +275,7 @@ class Verification:
             print(f"CSV file '{csv_filename}' created successfully.")
 
        
-    def add_minutes_to_time(self,input_time_str:str, delta_minutes : int):
+    def _add_minutes_to_time(self,input_time_str:str, delta_minutes : int):
         """Add minutes to a time string.
 
         Args:
@@ -300,7 +302,7 @@ class Verification:
         return (filtered_dict)
                     
             
-    def day_analyze_and_print_results(self, directory:str, time:str, seuil:float,  min_serie = 0, min_drop = 0):
+    def day_analyze_and_print_results(self, directory:str, time:str, seuil = 2.0,  min_serie = 0, min_drop = 0):
         """Analyze anomalies for a given day and print the results.
 
         Args:
@@ -311,6 +313,9 @@ class Verification:
         Returns:
             None
         """
+        assert seuil >= 0.0 , "Le seuil doit être un nombre positif"
+        assert min_serie >= 0, "Le min_serie doit être positif"
+        assert min_drop >= 0 , "Le min_drop doit être positif"
         day_data = Loader(directory).data_for_day(time)
         results_data = Calculation(directory).zscore_verification(day_data)
         
@@ -324,7 +329,7 @@ class Verification:
         self.prettier_following_drop(filtered_drop_series_dict)
         
 
-    def day_mean_analyze_and_print_results(self, time : str, seuil : float, min_serie = 0, min_drop = 0):
+    def day_mean_analyze_and_print_results(self, time : str, seuil = 2.0, min_serie = 0, min_drop = 0):
         """Analyze mean anomalies for a given day and print the results.
 
         Args:
@@ -334,6 +339,9 @@ class Verification:
         Returns:
             None
         """
+        assert seuil >= 0.0 , "Le seuil doit être un nombre positif"
+        assert min_serie >= 0, "Le min_serie doit être positif"
+        assert min_drop >= 0 , "Le min_drop doit être positif"
         abnormal =self.day_mean_zscore_verification(time, seuil)
         following = self.day_following_timestamps(abnormal)
         previous_data = self.day_mean_anomalie_slope(time,seuil)
@@ -343,28 +351,7 @@ class Verification:
         filtered_drop_series_dict = self.filter_drop_series(drop_series_dict,min_drop,min_serie)
         self.prettier_following_drop(filtered_drop_series_dict)
 
-    def week_analyze_and_print_results(self, start_date : str, seuil : float, min_serie = 0, min_drop = 0):
-        """Analyze mean anomalies for a given day and print the results.
-
-        Args:
-            time (str): The date to be analyzed.
-            seuil (int): The threshold value for z-score anomalies.
-
-        Returns:
-            None
-        """
-        week_data = self.loader.week_data(start_date)
-        zscored_data =self.calcul.zscore_verification(week_data)
-        abnormal =  self.z_score_verification(zscored_data,seuil)
-        
-        following = self.day_following_timestamps(abnormal)
-        previous_data = self.day_mean_anomalie_slope(time,seuil)
-        
-        
-        drop_series_dict = self.following_error_drop_dict(following, previous_data)
-        filtered_drop_series_dict = self.filter_drop_series(drop_series_dict,min_drop,min_serie)
-        self.prettier_following_drop(filtered_drop_series_dict)
-        
+   
         
     def prettier_following_drop(self,result_dict):
         """Print following anomalies with drop values in a prettier format.
@@ -380,10 +367,21 @@ class Verification:
             print("{:<12} {:<10} {:<10} {:<10}".format('Time', 'End_time' ,'Serie', 'Drop'))
             for time_key, values in data.items():
                 print("{:<12} {:<10} {:<10} {:<10}".format(
-                    time_key, self.add_minutes_to_time(time_key, values.get('serie', '') ) , values.get('serie', ''), values.get('drop', '')
+                    time_key, self._add_minutes_to_time(time_key, values.get('serie', '') ) , values.get('serie', ''), values.get('drop', '')
                 ))
 
+    def isStationnary(self,data : pd.DataFrame):
+        columns = ['auctions','revenue','impressions']
 
+        for column in columns:
+            res = adfuller(data[column])
+            print(f'Augmneted Dickey_fuller Statistic ({column}): %f' % res[0])
+            print('p-value: %f' % res[1])
+            
+            # printing the critical values at different alpha levels.
+            print('critical values at different levels:')
+            for k, v in res[4].items():
+                print('\t%s: %.3f' % (k, v))
                
 if __name__ == "__main__":
     directory = 'data/3ee1bd1f-01d8-4277-929d-53b1cebe457b'
@@ -402,4 +400,4 @@ if __name__ == "__main__":
     
    
     
-    
+    ver.week_analyze_and_print_results(time,seuil,min_serie,min_drop)

@@ -176,13 +176,12 @@ if __name__ == "__main__":
 
 
     loader = Loader(directory)
-    data = loader.data_for_week(time)
+    data = loader.week_data(time)
     normal = Normalise(directory)
     weekly = normal.data_substraction_from_week_model()
 
-    for index, data in weekly.items(): 
-        values = cal.zscore_verification(data)
-
+    results = cal.zscore_verification(data) 
+    results.to_csv('test.csv')
         #values.to_csv(f'{index}_res.csv')
         
     #print(cal.moving_average_expo_calculation("2023-10-05"))

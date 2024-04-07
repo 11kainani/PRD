@@ -7,11 +7,11 @@ class FileManager():
     """
     def __init__(self,main_csv_file):
         self.data_directory = "data"
+        os.makedirs(self.data_directory,exist_ok=True)
         "The name of the the data file in the project. The main data csv should be placed in a directory named data"
-        if main_csv_file.startswith("data"):
-            self.datafile_location = f'{main_csv_file}'
-        else: 
-            self.datafile_location = f'{self.data_directory}/{main_csv_file}'
+        
+        self.datafile_location = f'{main_csv_file}'
+        
         self.selected_directory = None
         """ The currrent directory to be studied -> A directory corresponds to a site 
         """
@@ -27,7 +27,9 @@ class FileManager():
         separators = [';', ',']  
         group_field = 'tagid'
 
-
+        assert os.path.isdir(self.data_directory), "A directory named data doesn't exist. Please create it and put your main csv file into the newly created data directory in your working project"
+        assert os.path.isfile(self.datafile_location), "The main csv file isn't located in the correct directory. Make sure that it is placed inside the directory named data"
+            
         for sep in separators:
             try:
                 data = pd.read_csv(csv_path, sep=sep, encoding='utf-8')
